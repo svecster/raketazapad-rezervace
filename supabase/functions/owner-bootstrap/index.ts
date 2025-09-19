@@ -373,6 +373,96 @@ Deno.serve(async (req) => {
       }
     }
 
+    if (action === 'updateUser') {
+      try {
+        // Update user record in public schema
+        const { error: userError } = await supabaseAdmin
+          .from('users')
+          .update({
+            name: userData.name,
+            email: userData.email,
+            username: userData.username,
+            phone: userData.phone,
+            role: userData.role
+          })
+          .eq('id', userData.id);
+
+        if (userError) {
+          console.error('User update error:', userError);
+          return new Response(
+            JSON.stringify({ success: false, error: userError.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // If email changed, also update auth user
+        if (userData.email) {
+          const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(userData.id, {
+            email: userData.email
+          });
+
+          if (authError) {
+            console.error('Auth user update error:', authError);
+            // Don't fail completely, just log the error
+            console.log('Failed to update auth email, but user record was updated');
+          }
+        }
+
+        console.log(`Successfully updated user: ${userData.id}`);
+        return new Response(
+          JSON.stringify({ success: true }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (error: any) {
+        console.error('Error updating user:', error);
+        return new Response(
+          JSON.stringify({ success: false, error: error.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    if (action === 'deleteUser') {
+      try {
+        // First delete from public.users table
+        const { error: userError } = await supabaseAdmin
+          .from('users')
+          .delete()
+          .eq('id', userData.userId);
+
+        if (userError) {
+          console.error('User deletion error:', userError);
+          return new Response(
+            JSON.stringify({ success: false, error: userError.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Then delete auth user
+        const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userData.userId);
+
+        if (authError) {
+          console.error('Auth user deletion error:', authError);
+          return new Response(
+            JSON.stringify({ success: false, error: authError.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        console.log(`Successfully deleted user: ${userData.userId}`);
+        return new Response(
+          JSON.stringify({ success: true }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (error: any) {
+        console.error('Error deleting user:', error);
+        return new Response(
+          JSON.stringify({ success: false, error: error.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     return new Response(
       JSON.stringify({ success: false, error: 'Neplatná akce' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }

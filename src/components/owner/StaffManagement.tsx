@@ -50,6 +50,18 @@ export const StaffManagement = () => {
     role: 'staff' as 'staff' | 'owner'
   });
 
+  const [editForm, setEditForm] = useState({
+    id: '',
+    username: '',
+    name: '',
+    email: '',
+    phone: '',
+    role: 'staff' as 'staff' | 'owner' | 'player'
+  });
+
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+
   useEffect(() => {
     loadUsers();
   }, []);
@@ -170,6 +182,82 @@ export const StaffManagement = () => {
       });
     } catch (error) {
       console.error('Failed to copy password:', error);
+    }
+  };
+
+  const openEditDialog = (user: User) => {
+    setEditingUser(user);
+    setEditForm({
+      id: user.id,
+      username: user.username || '',
+      name: user.name,
+      email: user.email,
+      phone: user.phone || '',
+      role: user.role
+    });
+    setShowEditDialog(true);
+  };
+
+  const handleEditUser = async () => {
+    if (!editForm.name || !editForm.email) {
+      toast({
+        title: "Chyba",
+        description: "Vyplňte všechna povinná pole",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCreating(true);
+    
+    const result = await OwnerBootstrapService.updateUser({
+      id: editForm.id,
+      username: editForm.username,
+      name: editForm.name,
+      email: editForm.email,
+      phone: editForm.phone,
+      role: editForm.role
+    });
+
+    if (result.success) {
+      toast({
+        title: "Uživatel upraven",
+        description: "Údaje byly úspěšně aktualizovány",
+      });
+      
+      setShowEditDialog(false);
+      setEditingUser(null);
+      loadUsers();
+    } else {
+      toast({
+        title: "Chyba při úpravě uživatele",
+        description: result.error,
+        variant: "destructive",
+      });
+    }
+
+    setIsCreating(false);
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    if (!confirm(`Opravdu chcete smazat uživatele ${userName}? Tato akce je nevratná!`)) {
+      return;
+    }
+
+    const result = await OwnerBootstrapService.deleteUser(userId);
+    
+    if (result.success) {
+      toast({
+        title: "Uživatel smazán",
+        description: `${userName} byl úspěšně smazán`,
+      });
+      loadUsers();
+    } else {
+      toast({
+        title: "Chyba při mazání uživatele",
+        description: result.error,
+        variant: "destructive",
+      });
     }
   };
 
@@ -314,6 +402,95 @@ export const StaffManagement = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Upravit uživatele</DialogTitle>
+              <DialogDescription>
+                Upravte údaje uživatele {editingUser?.name}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-username">Uživatelské jméno</Label>
+                <Input
+                  id="edit-username"
+                  placeholder="pokladna"
+                  value={editForm.username}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, username: e.target.value }))}
+                />
+                {editForm.username && (
+                  <p className="text-sm text-muted-foreground">
+                    Alias email: {editForm.username}@club.local
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-name">Jméno *</Label>
+                <Input
+                  id="edit-name"
+                  placeholder="Jan Novák"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-email">Email *</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  placeholder="jan.novak@email.cz"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-phone">Telefon</Label>
+                <Input
+                  id="edit-phone"
+                  placeholder="+420 123 456 789"
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-role">Role *</Label>
+                <Select value={editForm.role} onValueChange={(value: 'staff' | 'owner' | 'player') => setEditForm(prev => ({ ...prev, role: value }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="player">Hráč</SelectItem>
+                    <SelectItem value="staff">Zaměstnanec</SelectItem>
+                    <SelectItem value="owner">Majitel</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={handleEditUser}
+                  disabled={isCreating}
+                  className="flex-1 btn-tennis"
+                >
+                  {isCreating ? "Ukládám..." : "Uložit změny"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEditDialog(false)}
+                >
+                  Zrušit
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {loading ? (
@@ -349,6 +526,14 @@ export const StaffManagement = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => openEditDialog(user)}
+                  >
+                    <UserPlus className="mr-1 h-3 w-3" />
+                    Upravit
+                  </Button>
                   {user.role !== 'player' && (
                     <Button 
                       variant="outline" 
@@ -360,9 +545,13 @@ export const StaffManagement = () => {
                     </Button>
                   )}
                   {user.role !== 'owner' && (
-                    <Button variant="destructive" size="sm">
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => handleDeleteUser(user.id, user.name)}
+                    >
                       <UserMinus className="mr-1 h-3 w-3" />
-                      Deaktivovat
+                      Smazat
                     </Button>
                   )}
                 </div>

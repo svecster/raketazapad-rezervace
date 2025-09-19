@@ -205,4 +205,57 @@ export class OwnerBootstrapService {
       return { success: false, error: error.message };
     }
   }
+
+  /**
+   * Update user data
+   */
+  static async updateUser(userData: {
+    id: string;
+    username?: string;
+    name: string;
+    email: string;
+    phone?: string;
+    role: 'staff' | 'owner' | 'player';
+  }): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { data, error } = await supabase.functions.invoke('owner-bootstrap', {
+        body: { action: 'updateUser', userData }
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      if (!data.success) {
+        return { success: false, error: data.error };
+      }
+
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Delete user
+   */
+  static async deleteUser(userId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { data, error } = await supabase.functions.invoke('owner-bootstrap', {
+        body: { action: 'deleteUser', userData: { userId } }
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      if (!data.success) {
+        return { success: false, error: data.error };
+      }
+
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
 }
