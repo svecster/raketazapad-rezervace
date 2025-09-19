@@ -68,7 +68,18 @@ export const DateTimeSelection = ({
         duration: selectedDuration
       });
     }
-  }, [selectedDate, selectedTime, selectedDuration]);
+  }, [selectedDate, selectedTime, selectedDuration, onDateTimeSelect]);
+
+  // Ensure initial duration is set if not provided
+  useEffect(() => {
+    if (!duration && selectedDuration) {
+      onDateTimeSelect({
+        date: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '',
+        startTime: selectedTime || '',
+        duration: selectedDuration
+      });
+    }
+  }, []);
 
   const generateTimeSlots = () => {
     if (!selectedDate || !selectedCourt) return;

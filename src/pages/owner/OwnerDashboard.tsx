@@ -18,6 +18,9 @@ import {
 import { Layout } from '@/components/layout/Layout';
 import { formatCurrency } from '@/lib/utils/currency';
 import { StaffManagement } from '@/components/owner/StaffManagement';
+import { ReservationCalendar } from '@/components/admin/ReservationCalendar';
+import { BarAccountManager } from '@/components/admin/BarAccountManager';
+import { CashRegisterManager } from '@/components/admin/CashRegisterManager';
 
 export const OwnerDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -228,41 +231,15 @@ export const OwnerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="reservations">
-            <Card>
-              <CardHeader>
-                <CardTitle>Přehled rezervací</CardTitle>
-                <CardDescription>
-                  Kompletní správa všech rezervací včetně host rezervací
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">
-                    Kalendář rezervací bude zde implementován
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <ReservationCalendar />
           </TabsContent>
 
           <TabsContent value="bar">
-            <Card>
-              <CardHeader>
-                <CardTitle>Bar & Pokladna</CardTitle>
-                <CardDescription>
-                  Správa bar účtů, pokladny a plateb
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <CreditCard className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">
-                    Pokladní systém bude zde implementován
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <BarAccountManager />
+          </TabsContent>
+
+          <TabsContent value="cash">
+            <CashRegisterManager />
           </TabsContent>
 
           <TabsContent value="inventory">

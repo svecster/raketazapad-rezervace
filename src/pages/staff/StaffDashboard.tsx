@@ -20,6 +20,8 @@ import {
 import { Layout } from '@/components/layout/Layout';
 import { formatCurrency } from '@/lib/utils/currency';
 import { formatDateTime } from '@/lib/utils/datetime';
+import { BarAccountManager } from '@/components/admin/BarAccountManager';
+import { CashRegisterManager } from '@/components/admin/CashRegisterManager';
 
 export const StaffDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -198,44 +200,11 @@ export const StaffDashboard = () => {
           </TabsContent>
 
           <TabsContent value="bar" className="space-y-4">
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Otevřené bar účty</h2>
-              <div className="grid gap-4">
-                {mockBarOrders.map((order) => (
-                  <Card key={order.id}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle>Bar účet #{order.id}</CardTitle>
-                        <span className="text-lg font-bold text-primary">
-                          {formatCurrency(order.total_price)}
-                        </span>
-                      </div>
-                      <CardDescription>
-                        Vytvořen: {formatDateTime(order.created_at)}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2 mb-4">
-                        {order.items.map((item, index) => (
-                          <div key={index} className="flex justify-between text-sm">
-                            <span>{item.quantity}× {item.name}</span>
-                            <span>{formatCurrency(item.price * item.quantity)}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          Přidat položku
-                        </Button>
-                        <Button className="btn-tennis" size="sm">
-                          Uzavřít účet
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
+            <BarAccountManager />
+          </TabsContent>
+
+          <TabsContent value="cash" className="space-y-4">
+            <CashRegisterManager />
           </TabsContent>
 
           <TabsContent value="equipment" className="space-y-4">
