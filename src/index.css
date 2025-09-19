@@ -4,93 +4,89 @@
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
+Tennis club green theme inspired by tenisnisa.cz
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
+    /* Tennis green color scheme inspired by tenisnisa.cz */
+    --background: 138 8% 96%; /* #F5F7F4 */
+    --foreground: 0 0% 7%; /* #111 */
+    --card: 138 8% 96%;
+    --card-foreground: 0 0% 7%;
+    --popover: 138 8% 96%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 122 60% 11%; /* #1B5E20 */
+    --primary-foreground: 138 8% 96%;
+    --secondary: 122 43% 31%; /* #43A047 */
+    --secondary-foreground: 138 8% 96%;
+    --muted: 138 8% 90%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 122 43% 31%;
+    --accent-foreground: 138 8% 96%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
+    --border: 138 8% 85%;
+    --input: 138 8% 85%;
+    --ring: 122 60% 11%;
     --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Tennis club specific colors */
+    --tennis-primary: 122 60% 11%; /* Deep green #1B5E20 */
+    --tennis-secondary: 122 43% 31%; /* Grass green #43A047 */
+    --tennis-clay: 13 36% 53%; /* Clay court #B65C4E */
+    --tennis-warning: 45 100% 66%; /* Sun yellow #FFD54F */
+    --tennis-success: 122 43% 31%;
+    --tennis-indoor: 122 60% 11%;
+    --tennis-outdoor: 122 43% 31%;
+    
+    /* Semantic tokens */
+    --court-indoor: hsl(var(--tennis-indoor));
+    --court-outdoor: hsl(var(--tennis-outdoor));
+    --price-color: hsl(var(--tennis-primary));
+    --success-color: hsl(var(--tennis-success));
+    --warning-color: hsl(var(--tennis-warning));
+    --clay-color: hsl(var(--tennis-clay));
+    
+    --sidebar-background: 138 8% 96%;
+    --sidebar-foreground: 0 0% 7%;
+    --sidebar-primary: 122 60% 11%;
+    --sidebar-primary-foreground: 138 8% 96%;
+    --sidebar-accent: 138 8% 90%;
+    --sidebar-accent-foreground: 0 0% 7%;
+    --sidebar-border: 138 8% 85%;
+    --sidebar-ring: 122 60% 11%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
+    --background: 122 60% 4%;
+    --foreground: 138 8% 96%;
+    --card: 122 60% 4%;
+    --card-foreground: 138 8% 96%;
+    --popover: 122 60% 4%;
+    --popover-foreground: 138 8% 96%;
+    --primary: 122 43% 31%;
+    --primary-foreground: 122 60% 4%;
+    --secondary: 122 60% 11%;
+    --secondary-foreground: 138 8% 96%;
+    --muted: 122 60% 8%;
+    --muted-foreground: 138 8% 65%;
+    --accent: 122 60% 8%;
+    --accent-foreground: 138 8% 96%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 122 60% 8%;
+    --input: 122 60% 8%;
+    --ring: 122 43% 31%;
+    
+    --sidebar-background: 122 60% 4%;
+    --sidebar-foreground: 138 8% 96%;
+    --sidebar-primary: 122 43% 31%;
+    --sidebar-primary-foreground: 122 60% 4%;
+    --sidebar-accent: 122 60% 8%;
+    --sidebar-accent-foreground: 138 8% 96%;
+    --sidebar-border: 122 60% 8%;
+    --sidebar-ring: 122 43% 31%;
   }
 }
 
@@ -100,6 +96,56 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+  
+  /* Czech number formatting */
+  .currency {
+    font-variant-numeric: tabular-nums;
+  }
+  
+  /* Tennis court specific styles */
+  .court-indoor {
+    @apply bg-primary/10 border-primary text-primary;
+  }
+  
+  .court-outdoor {
+    @apply bg-secondary/10 border-secondary text-secondary;
+  }
+  
+  .court-card {
+    @apply rounded-lg border bg-card p-4 shadow-sm transition-shadow hover:shadow-md;
+  }
+  
+  /* Status indicators */
+  .status-available {
+    @apply bg-green-50 text-green-700 border-green-200;
+  }
+  
+  .status-booked {
+    @apply bg-yellow-50 text-yellow-700 border-yellow-200;
+  }
+  
+  .status-paid {
+    @apply bg-blue-50 text-blue-700 border-blue-200;
+  }
+  
+  .status-cancelled {
+    @apply bg-red-50 text-red-700 border-red-200;
+  }
+}
+
+@layer components {
+  /* Czech-specific button variants */
+  .btn-tennis {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors;
+  }
+  
+  .btn-court-indoor {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  
+  .btn-court-outdoor {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
   }
 }
