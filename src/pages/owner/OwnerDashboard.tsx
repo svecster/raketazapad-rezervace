@@ -238,10 +238,6 @@ export const OwnerDashboard = () => {
             <BarAccountManager />
           </TabsContent>
 
-          <TabsContent value="cash">
-            <CashRegisterManager />
-          </TabsContent>
-
           <TabsContent value="inventory">
             <Card>
               <CardHeader>
@@ -319,22 +315,7 @@ export const OwnerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="cash">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pokladna</CardTitle>
-                <CardDescription>
-                  Správa pokladní směny, příjmy/výdaje a denní závěrka
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Banknote className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">
-                    Pokladní systém bude zde implementován
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <CashRegisterManager />
           </TabsContent>
         </Tabs>
       </div>

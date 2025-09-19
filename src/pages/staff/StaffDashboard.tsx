@@ -203,10 +203,6 @@ export const StaffDashboard = () => {
             <BarAccountManager />
           </TabsContent>
 
-          <TabsContent value="cash" className="space-y-4">
-            <CashRegisterManager />
-          </TabsContent>
-
           <TabsContent value="equipment" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
@@ -276,22 +272,7 @@ export const StaffDashboard = () => {
           </TabsContent>
 
           <TabsContent value="cash" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pokladní směna</CardTitle>
-                <CardDescription>
-                  Otevření/uzavření směny, příjmy/výdaje a denní závěrka
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Banknote className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">
-                    Pokladní systém bude zde implementován
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <CashRegisterManager />
           </TabsContent>
         </Tabs>
       </div>
