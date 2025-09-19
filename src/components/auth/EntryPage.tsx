@@ -10,7 +10,7 @@ import { Loader2, Circle, UserPlus, LogIn, Calendar } from 'lucide-react';
 import { ReservationModal } from '@/components/reservation/ReservationModal';
 
 export const EntryPage = () => {
-  const { signIn, signUp, user, loading } = useAuth();
+  const { signIn, signUp, user, profile, loading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'signin' | 'signup' | 'guest'>('signin');
   const [formData, setFormData] = useState({
@@ -20,10 +20,22 @@ export const EntryPage = () => {
     email: '',
     confirmPassword: '',
   });
+  const [showReservationModal, setShowReservationModal] = useState(false);
 
-  // Redirect if already authenticated
+  // Redirect authenticated users to role dashboards after hooks are initialized
   if (!loading && user) {
-    return <Navigate to="/" replace />;
+    if (!profile) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary/20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
+    }
+    const target =
+      profile.role === 'owner' ? '/admin/majitel' :
+      profile.role === 'staff' ? '/admin/obsluha' :
+      '/app/hrac';
+    return <Navigate to={target} replace />;
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -52,7 +64,7 @@ export const EntryPage = () => {
     setIsLoading(false);
   };
 
-  const [showReservationModal, setShowReservationModal] = useState(false);
+// moved showReservationModal hook to top to maintain hook order
 
   if (loading) {
     return (
