@@ -53,38 +53,58 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'create') {
-      // Create owner auth user and public user record
+      // Create owner auth user and public user record if they don't exist
       console.log('Creating owner user...')
       
-      // Create auth user
-      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-        email: 'admin@club.local',
-        password: 'Admin123!',
-        email_confirm: true,
-        user_metadata: {
-          role: 'owner',
-          username: 'admin',
-          name: 'Hlavní administrátor'
-        }
-      })
-
-      if (authError) {
-        console.error('Auth user creation error:', authError)
+      // First check if auth user already exists
+      const { data: authUsers, error: listError } = await supabaseAdmin.auth.admin.listUsers()
+      
+      if (listError) {
+        console.error('Error listing users:', listError)
         return new Response(
-          JSON.stringify({ success: false, error: `Chyba při vytváření uživatele: ${authError.message}` }),
+          JSON.stringify({ success: false, error: 'Chyba při kontrole existujících uživatelů' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
         )
+      }
+
+      const existingAuthUser = authUsers.users.find(user => user.email === 'admin@club.local')
+      let authUserId = existingAuthUser?.id
+
+      // Create auth user only if it doesn't exist
+      if (!existingAuthUser) {
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+          email: 'admin@club.local',
+          password: 'Admin123!',
+          email_confirm: true,
+          user_metadata: {
+            role: 'owner',
+            username: 'admin',
+            name: 'Hlavní administrátor'
+          }
+        })
+
+        if (authError) {
+          console.error('Auth user creation error:', authError)
+          return new Response(
+            JSON.stringify({ success: false, error: `Chyba při vytváření uživatele: ${authError.message}` }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+          )
+        }
+
+        authUserId = authData.user.id
       }
 
       // Create/update public user record
       const { error: publicError } = await supabaseAdmin
         .from('users')
         .upsert({
-          id: authData.user.id,
+          id: authUserId,
           email: 'admin@club.local',
           username: 'admin',
           name: 'Hlavní administrátor',
           role: 'owner'
+        }, {
+          onConflict: 'id'
         })
 
       if (publicError) {
