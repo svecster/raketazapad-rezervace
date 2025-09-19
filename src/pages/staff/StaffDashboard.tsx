@@ -12,7 +12,10 @@ import {
   BarChart3,
   User,
   Clock,
-  MapPin
+  MapPin,
+  Banknote,
+  Zap,
+  Coffee
 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { formatCurrency } from '@/lib/utils/currency';
@@ -71,7 +74,7 @@ export const StaffDashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
             <TabsTrigger value="overview">
               <BarChart3 className="mr-2 h-4 w-4" />
               Přehled
@@ -81,16 +84,20 @@ export const StaffDashboard = () => {
               Rezervace
             </TabsTrigger>
             <TabsTrigger value="bar">
-              <CreditCard className="mr-2 h-4 w-4" />
+              <Coffee className="mr-2 h-4 w-4" />
               Bar účty
             </TabsTrigger>
             <TabsTrigger value="equipment">
-              <Lightbulb className="mr-2 h-4 w-4" />
+              <Zap className="mr-2 h-4 w-4" />
               Vybavení
             </TabsTrigger>
             <TabsTrigger value="customers">
               <Users className="mr-2 h-4 w-4" />
               Zákazníci
+            </TabsTrigger>
+            <TabsTrigger value="cash">
+              <Banknote className="mr-2 h-4 w-4" />
+              Pokladna
             </TabsTrigger>
           </TabsList>
 
@@ -293,6 +300,25 @@ export const StaffDashboard = () => {
                   <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">
                     Seznam zákazníků bude zde implementován
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="cash" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Pokladní směna</CardTitle>
+                <CardDescription>
+                  Otevření/uzavření směny, příjmy/výdaje a denní závěrka
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Banknote className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">
+                    Pokladní systém bude zde implementován
                   </p>
                 </div>
               </CardContent>

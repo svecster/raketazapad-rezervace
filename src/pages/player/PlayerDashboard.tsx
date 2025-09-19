@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, CreditCard, Plus, Clock, MapPin } from 'lucide-react';
+import { Calendar, CreditCard, Plus, Clock, MapPin, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Layout } from '@/components/layout/Layout';
 import { formatCurrency } from '@/lib/utils/currency';
@@ -10,7 +10,7 @@ import { formatDateTime } from '@/lib/utils/datetime';
 
 export const PlayerDashboard = () => {
   const { profile } = useAuth();
-  const [activeTab, setActiveTab] = useState('reservations');
+  const [activeTab, setActiveTab] = useState('new-reservation');
 
   // Mock data - replace with real data from Supabase
   const mockReservations = [
@@ -67,21 +67,21 @@ export const PlayerDashboard = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="reservations">
+            <TabsTrigger value="new-reservation">
               <Calendar className="mr-2 h-4 w-4" />
+              Rezervace
+            </TabsTrigger>
+            <TabsTrigger value="my-reservations">
+              <Clock className="mr-2 h-4 w-4" />
               Moje rezervace
             </TabsTrigger>
-            <TabsTrigger value="payments">
-              <CreditCard className="mr-2 h-4 w-4" />
-              Moje platby
-            </TabsTrigger>
-            <TabsTrigger value="new-reservation">
-              <Plus className="mr-2 h-4 w-4" />
-              Nová rezervace
+            <TabsTrigger value="profile">
+              <User className="mr-2 h-4 w-4" />
+              Profil
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="reservations" className="space-y-4">
+          <TabsContent value="my-reservations" className="space-y-4">
             <div>
               <h2 className="text-xl font-semibold mb-4">Nadcházející rezervace</h2>
               <div className="grid gap-4">
@@ -149,43 +149,23 @@ export const PlayerDashboard = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="payments" className="space-y-4">
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Historie plateb</h2>
-              <div className="grid gap-4">
-                {mockPayments.map((payment) => (
-                  <Card key={payment.id}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle>{payment.description}</CardTitle>
-                        <span className="text-lg font-bold text-primary">
-                          {formatCurrency(payment.amount)}
-                        </span>
-                      </div>
-                      <CardDescription>
-                        {formatDateTime(payment.date)}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">
-                          Typ: {payment.type === 'reservation' ? 'Rezervace' : 'Bar'}
-                        </span>
-                        <span className="text-sm text-green-600 font-medium">
-                          Zaplaceno
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              
-              <div className="flex justify-end pt-4">
-                <Button variant="outline">
-                  Export plateb
-                </Button>
-              </div>
-            </div>
+          <TabsContent value="profile" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Můj profil</CardTitle>
+                <CardDescription>
+                  Správa osobních údajů, peněženka/kredit a historie návštěv
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <User className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">
+                    Profil a peněženka bude zde implementován
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="new-reservation">
@@ -193,7 +173,7 @@ export const PlayerDashboard = () => {
               <CardHeader>
                 <CardTitle>Nová rezervace</CardTitle>
                 <CardDescription>
-                  Vytvořte novou rezervace kurtu s předvyplněnými údaji
+                  Veřejný rezervační formulář - vyhledejte volné časy a rezervujte kurt
                 </CardDescription>
               </CardHeader>
               <CardContent>

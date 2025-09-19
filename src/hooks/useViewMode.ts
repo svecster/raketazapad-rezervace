@@ -36,20 +36,30 @@ export const useViewMode = () => {
     switch (viewMode) {
       case 'owner':
         return [
-          { path: '/rezervace', label: 'Rezervace', icon: 'Calendar' },
-          { path: '/admin/personal', label: 'Personál', icon: 'BarChart3' },
-          { path: '/admin/majitel', label: 'Správa', icon: 'Settings' },
+          { path: '/admin/majitel', label: 'Přehled', icon: 'BarChart3' },
+          { path: '/admin/rezervace', label: 'Rezervace', icon: 'Calendar' },
+          { path: '/admin/uzivatele', label: 'Uživatelé', icon: 'Users' },
+          { path: '/admin/bar-ucty', label: 'Bar & účty', icon: 'Coffee' },
+          { path: '/admin/sklad', label: 'Sklad', icon: 'Package' },
+          { path: '/admin/reporty', label: 'Reporty', icon: 'FileText' },
+          { path: '/admin/audit', label: 'Audit', icon: 'Shield' },
+          { path: '/admin/nastaveni', label: 'Nastavení', icon: 'Settings' },
           { path: '/admin/pokladna', label: 'Pokladna', icon: 'Banknote' }
         ];
       case 'staff':
         return [
-          { path: '/rezervace', label: 'Rezervace', icon: 'Calendar' },
-          { path: '/admin/personal', label: 'Personál', icon: 'BarChart3' },
-          { path: '/admin/pokladna', label: 'Pokladna', icon: 'Banknote' }
+          { path: '/obsluha/prehled', label: 'Přehled', icon: 'BarChart3' },
+          { path: '/obsluha/rezervace', label: 'Rezervace', icon: 'Calendar' },
+          { path: '/obsluha/bar-ucty', label: 'Bar účty', icon: 'Coffee' },
+          { path: '/obsluha/vybaveni', label: 'Vybavení', icon: 'Zap' },
+          { path: '/obsluha/zakaznici', label: 'Zákazníci', icon: 'Users' },
+          { path: '/obsluha/pokladna', label: 'Pokladna', icon: 'Banknote' }
         ];
       case 'player':
         return [
-          { path: '/rezervace', label: 'Rezervace', icon: 'Calendar' }
+          { path: '/rezervace', label: 'Rezervace', icon: 'Calendar' },
+          { path: '/moje-rezervace', label: 'Moje rezervace', icon: 'CalendarCheck' },
+          { path: '/profil', label: 'Profil', icon: 'User' }
         ];
       default:
         return [];

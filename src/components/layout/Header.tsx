@@ -11,7 +11,14 @@ import {
   Banknote,
   Crown,
   UserCog,
-  ChevronDown
+  ChevronDown,
+  Users,
+  Coffee,
+  Package,
+  FileText,
+  Shield,
+  Zap,
+  CalendarCheck
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -33,7 +40,20 @@ export const Header = () => {
 
   // Get icon component by name
   const getIconComponent = (iconName: string) => {
-    const icons = { Calendar, BarChart3, Settings, Banknote };
+    const icons = { 
+      Calendar, 
+      BarChart3, 
+      Settings, 
+      Banknote,
+      Users,
+      Coffee,
+      Package,
+      FileText,
+      Shield,
+      Zap,
+      CalendarCheck,
+      User
+    };
     return icons[iconName as keyof typeof icons];
   };
 

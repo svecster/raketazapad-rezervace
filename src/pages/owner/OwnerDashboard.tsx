@@ -12,7 +12,8 @@ import {
   FileText,
   Shield,
   Calendar,
-  Package
+  Package,
+  Banknote
 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { formatCurrency } from '@/lib/utils/currency';
@@ -69,7 +70,7 @@ export const OwnerDashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9">
             <TabsTrigger value="overview">
               <BarChart3 className="mr-2 h-4 w-4" />
               Přehled
@@ -84,7 +85,7 @@ export const OwnerDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="bar">
               <CreditCard className="mr-2 h-4 w-4" />
-              Bar & Účty
+              Bar & účty
             </TabsTrigger>
             <TabsTrigger value="inventory">
               <Package className="mr-2 h-4 w-4" />
@@ -101,6 +102,10 @@ export const OwnerDashboard = () => {
             <TabsTrigger value="settings">
               <Settings className="mr-2 h-4 w-4" />
               Nastavení
+            </TabsTrigger>
+            <TabsTrigger value="cash">
+              <Banknote className="mr-2 h-4 w-4" />
+              Pokladna
             </TabsTrigger>
           </TabsList>
 
@@ -330,6 +335,25 @@ export const OwnerDashboard = () => {
                   <Settings className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">
                     Nastavení bude zde implementováno
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="cash">
+            <Card>
+              <CardHeader>
+                <CardTitle>Pokladna</CardTitle>
+                <CardDescription>
+                  Správa pokladní směny, příjmy/výdaje a denní závěrka
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Banknote className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">
+                    Pokladní systém bude zde implementován
                   </p>
                 </div>
               </CardContent>
