@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { formatCurrency } from '@/lib/utils/currency';
+import { StaffManagement } from '@/components/owner/StaffManagement';
 
 export const OwnerDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -174,13 +175,7 @@ export const OwnerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Správa uživatelů</h2>
-              <Button className="btn-tennis">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Pozvat uživatele
-              </Button>
-            </div>
+            <StaffManagement />
             
             <div className="grid gap-4">
               {mockUsers.map((user) => (

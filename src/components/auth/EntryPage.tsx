@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { Loader2, Circle, UserPlus, LogIn, Calendar } from 'lucide-react';
+import { ReservationModal } from '@/components/reservation/ReservationModal';
 
 export const EntryPage = () => {
   const { signIn, signUp, user, loading } = useAuth();
@@ -51,10 +52,7 @@ export const EntryPage = () => {
     setIsLoading(false);
   };
 
-  const handleGuestReservation = () => {
-    // Navigate to guest reservation wizard
-    window.location.href = '/rezervace/host';
-  };
+  const [showReservationModal, setShowReservationModal] = useState(false);
 
   if (loading) {
     return (
@@ -103,7 +101,7 @@ export const EntryPage = () => {
             size="lg" 
             variant="secondary" 
             className="w-full h-14 text-lg" 
-            onClick={handleGuestReservation}
+            onClick={() => setShowReservationModal(true)}
           >
             <Calendar className="mr-3 h-5 w-5" />
             Rezervovat bez registrace
@@ -250,6 +248,11 @@ export const EntryPage = () => {
           Registrací souhlasíte s podmínkami používání tenisového klubu
         </div>
       </div>
+      
+      <ReservationModal
+        isOpen={showReservationModal}
+        onClose={() => setShowReservationModal(false)}
+      />
     </div>
   );
 };
