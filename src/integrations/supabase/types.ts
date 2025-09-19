@@ -51,6 +51,9 @@ export type Database = {
           created_at: string | null
           id: string
           items: Json | null
+          payment_confirmed_at: string | null
+          payment_confirmed_by: string | null
+          payment_method: string | null
           payment_status: Database["public"]["Enums"]["payment_status"] | null
           reservation_id: string | null
           total_price: number
@@ -59,6 +62,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           items?: Json | null
+          payment_confirmed_at?: string | null
+          payment_confirmed_by?: string | null
+          payment_method?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           reservation_id?: string | null
           total_price?: number
@@ -67,16 +73,76 @@ export type Database = {
           created_at?: string | null
           id?: string
           items?: Json | null
+          payment_confirmed_at?: string | null
+          payment_confirmed_by?: string | null
+          payment_method?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           reservation_id?: string | null
           total_price?: number
         }
         Relationships: [
           {
+            foreignKeyName: "bar_orders_payment_confirmed_by_fkey"
+            columns: ["payment_confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bar_orders_reservation_id_fkey"
             columns: ["reservation_id"]
             isOneToOne: false
             referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cash_ledger: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          notes: string | null
+          receipt_number: string | null
+          reference_id: string | null
+          reference_type: string | null
+          shift_id: string | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description: string
+          id?: string
+          notes?: string | null
+          receipt_number?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          shift_id?: string | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          receipt_number?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          shift_id?: string | null
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cash_ledger_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -159,6 +225,54 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_settings: {
+        Row: {
+          cash_enabled: boolean
+          created_at: string
+          id: string
+          qr_bank_code: string | null
+          qr_default_message: string | null
+          qr_enabled: boolean
+          qr_enabled_for_bar: boolean
+          qr_enabled_for_reservations: boolean
+          qr_enabled_for_wallet: boolean
+          qr_iban: string | null
+          qr_recipient_name: string | null
+          qr_variable_symbol_prefix: string | null
+          updated_at: string
+        }
+        Insert: {
+          cash_enabled?: boolean
+          created_at?: string
+          id?: string
+          qr_bank_code?: string | null
+          qr_default_message?: string | null
+          qr_enabled?: boolean
+          qr_enabled_for_bar?: boolean
+          qr_enabled_for_reservations?: boolean
+          qr_enabled_for_wallet?: boolean
+          qr_iban?: string | null
+          qr_recipient_name?: string | null
+          qr_variable_symbol_prefix?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cash_enabled?: boolean
+          created_at?: string
+          id?: string
+          qr_bank_code?: string | null
+          qr_default_message?: string | null
+          qr_enabled?: boolean
+          qr_enabled_for_bar?: boolean
+          qr_enabled_for_reservations?: boolean
+          qr_enabled_for_wallet?: boolean
+          qr_iban?: string | null
+          qr_recipient_name?: string | null
+          qr_variable_symbol_prefix?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reservations: {
         Row: {
           court_id: string | null
@@ -167,6 +281,9 @@ export type Database = {
           guest_contact: Json | null
           guest_token: string | null
           id: string
+          payment_confirmed_at: string | null
+          payment_confirmed_by: string | null
+          payment_method: string | null
           price: number
           start_time: string
           status: Database["public"]["Enums"]["reservation_status"] | null
@@ -179,6 +296,9 @@ export type Database = {
           guest_contact?: Json | null
           guest_token?: string | null
           id?: string
+          payment_confirmed_at?: string | null
+          payment_confirmed_by?: string | null
+          payment_method?: string | null
           price: number
           start_time: string
           status?: Database["public"]["Enums"]["reservation_status"] | null
@@ -191,6 +311,9 @@ export type Database = {
           guest_contact?: Json | null
           guest_token?: string | null
           id?: string
+          payment_confirmed_at?: string | null
+          payment_confirmed_by?: string | null
+          payment_method?: string | null
           price?: number
           start_time?: string
           status?: Database["public"]["Enums"]["reservation_status"] | null
@@ -205,8 +328,56 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reservations_payment_confirmed_by_fkey"
+            columns: ["payment_confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "reservations_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shifts: {
+        Row: {
+          closed_at: string | null
+          closing_balance: number | null
+          created_at: string
+          id: string
+          notes: string | null
+          opening_balance: number
+          staff_user_id: string | null
+          status: Database["public"]["Enums"]["shift_status"]
+        }
+        Insert: {
+          closed_at?: string | null
+          closing_balance?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          opening_balance?: number
+          staff_user_id?: string | null
+          status?: Database["public"]["Enums"]["shift_status"]
+        }
+        Update: {
+          closed_at?: string | null
+          closing_balance?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          opening_balance?: number
+          staff_user_id?: string | null
+          status?: Database["public"]["Enums"]["shift_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shifts_staff_user_id_fkey"
+            columns: ["staff_user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -262,6 +433,14 @@ export type Database = {
       court_type: "indoor" | "outdoor"
       payment_status: "open" | "paid"
       reservation_status: "booked" | "paid" | "cancelled"
+      shift_status: "open" | "closed"
+      transaction_type:
+        | "cash_in"
+        | "cash_out"
+        | "qr_in"
+        | "sale_cash"
+        | "refund_cash"
+        | "shift_payout"
       user_role: "player" | "staff" | "owner"
     }
     CompositeTypes: {
@@ -394,6 +573,15 @@ export const Constants = {
       court_type: ["indoor", "outdoor"],
       payment_status: ["open", "paid"],
       reservation_status: ["booked", "paid", "cancelled"],
+      shift_status: ["open", "closed"],
+      transaction_type: [
+        "cash_in",
+        "cash_out",
+        "qr_in",
+        "sale_cash",
+        "refund_cash",
+        "shift_payout",
+      ],
       user_role: ["player", "staff", "owner"],
     },
   },

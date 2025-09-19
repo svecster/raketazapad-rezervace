@@ -32,9 +32,10 @@ interface SummaryProps {
 type PaymentMethod = 'cash' | 'card' | 'qr';
 
 export const Summary = ({ reservationData, onPaymentComplete }: SummaryProps) => {
-  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>('cash');
+  const [selectedPayment, setSelectedPayment] = useState<'cash' | 'qr'>('cash');
   const [isCreating, setIsCreating] = useState(false);
-  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [reservationId, setReservationId] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Calculate total price

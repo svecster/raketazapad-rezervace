@@ -1,11 +1,14 @@
 /**
  * Czech QR Payment service
- * Generates QR codes for Czech "QR Platba" standard
+ * Generates QR codes for Czech "QR Platba" standard (SPAYD)
  */
+
+import QRCode from 'qrcode';
+import { supabase } from "@/integrations/supabase/client";
 
 export interface QRPaymentData {
   amount: number;
-  currency: string;
+  currency?: string;
   message?: string;
   variableSymbol?: string;
   constantSymbol?: string;
@@ -22,34 +25,55 @@ export interface QRPaymentResult {
 }
 
 class QRPaymentService {
-  private readonly defaultRecipient = {
-    name: 'Tenisový klub Raketa',
-    account: '123456789',
-    bank: '0100', // Komerční banka
-  };
+  private settings: any = null;
 
-  generatePaymentString(data: QRPaymentData): string {
+  async getSettings() {
+    if (!this.settings) {
+      const { data, error } = await supabase
+        .from('payment_settings')
+        .select('*')
+        .single();
+      
+      if (error) {
+        console.error('Error loading payment settings:', error);
+        // Fallback to defaults
+        this.settings = {
+          qr_iban: '',
+          qr_bank_code: '0100',
+          qr_recipient_name: 'Tenisový klub Raketa',
+          qr_default_message: 'Tenisový klub - platba',
+          qr_variable_symbol_prefix: 'TK'
+        };
+      } else {
+        this.settings = data;
+      }
+    }
+    return this.settings;
+  }
+
+  async generatePaymentString(data: QRPaymentData): Promise<string> {
+    const settings = await this.getSettings();
     const {
       amount,
       currency = 'CZK',
-      message = '',
+      message = settings.qr_default_message,
       variableSymbol = '',
       constantSymbol = '',
       specificSymbol = '',
-      recipientName = this.defaultRecipient.name,
-      recipientAccount = this.defaultRecipient.account,
-      recipientBank = this.defaultRecipient.bank,
+      recipientName = settings.qr_recipient_name,
+      recipientAccount = settings.qr_iban,
+      recipientBank = settings.qr_bank_code,
     } = data;
 
-    // Czech QR Payment format (simplified version of SPAYD)
-    let paymentString = `SPD*1.0*ACC:${recipientAccount}/${recipientBank}*AM:${amount.toFixed(2)}*CC:${currency}`;
+    // Czech QR Payment format (SPAYD) with IBAN format
+    let paymentString = `SPD*1.0*ACC:${recipientAccount}*AM:${amount.toFixed(2)}*CC:${currency}`;
     
     if (recipientName) {
-      paymentString += `*RN:${recipientName}`;
+      paymentString += `*RN:${encodeURIComponent(recipientName)}`;
     }
     
     if (message) {
-      paymentString += `*MSG:${message}`;
+      paymentString += `*MSG:${encodeURIComponent(message)}`;
     }
     
     if (variableSymbol) {
@@ -68,64 +92,101 @@ class QRPaymentService {
   }
 
   async generateQRCode(data: QRPaymentData): Promise<QRPaymentResult> {
-    const paymentString = this.generatePaymentString(data);
+    const paymentString = await this.generatePaymentString(data);
     
-    // In a real implementation, you would use a QR code library like qrcode
-    // For now, we'll create a data URL that represents the QR code
-    const qrCodeDataUrl = await this.createQRCodeDataUrl(paymentString);
+    // Generate actual QR code
+    const qrCodeDataUrl = await QRCode.toDataURL(paymentString, {
+      errorCorrectionLevel: 'M',
+      type: 'image/png',
+      quality: 0.92,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      },
+      width: 256
+    });
     
     return {
       qrCode: qrCodeDataUrl,
       paymentString,
-      displayAmount: `${data.amount.toFixed(2)} ${data.currency}`,
+      displayAmount: `${data.amount.toFixed(2)} ${data.currency || 'CZK'}`,
     };
   }
 
-  async generateSplitPayments(
-    totalAmount: number,
-    playerShares: { playerId: string; playerName: string; amount: number }[],
-    reservationId: string
-  ): Promise<{ playerId: string; playerName: string; qrPayment: QRPaymentResult }[]> {
-    const results = [];
-
-    for (const share of playerShares) {
-      const qrPayment = await this.generateQRCode({
-        amount: share.amount,
-        currency: 'CZK',
-        message: `Tenisový klub - Rezervace ${reservationId.slice(-8)}`,
-        variableSymbol: reservationId.replace('-', '').slice(-8),
-      });
-
-      results.push({
-        playerId: share.playerId,
-        playerName: share.playerName,
-        qrPayment,
-      });
-    }
-
-    return results;
+  async generateReservationQR(reservationId: string, amount: number, courtName?: string, date?: string): Promise<QRPaymentResult> {
+    const settings = await this.getSettings();
+    const shortId = reservationId.slice(-8).toUpperCase();
+    const message = courtName && date 
+      ? `Raketa - ${courtName} ${date}`
+      : `Raketa - Rezervace ${shortId}`;
+    
+    return this.generateQRCode({
+      amount,
+      currency: 'CZK',
+      message,
+      variableSymbol: `${settings.qr_variable_symbol_prefix}${shortId.replace('-', '')}`,
+    });
   }
 
-  private async createQRCodeDataUrl(data: string): Promise<string> {
-    // This is a placeholder implementation
-    // In a real app, you would use a QR code library like:
-    // import QRCode from 'qrcode';
-    // return await QRCode.toDataURL(data);
+  async generateBarOrderQR(orderId: string, amount: number): Promise<QRPaymentResult> {
+    const settings = await this.getSettings();
+    const shortId = orderId.slice(-8).toUpperCase();
     
-    // For now, return a placeholder SVG
-    const svg = `
-      <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-        <rect width="200" height="200" fill="white"/>
-        <text x="100" y="100" text-anchor="middle" font-family="Arial" font-size="12">
-          QR kód pro platbu
-        </text>
-        <text x="100" y="120" text-anchor="middle" font-family="Arial" font-size="10">
-          ${data.substring(0, 30)}...
-        </text>
-      </svg>
-    `;
+    return this.generateQRCode({
+      amount,
+      currency: 'CZK',
+      message: `Raketa - Bar ${shortId}`,
+      variableSymbol: `${settings.qr_variable_symbol_prefix}B${shortId.replace('-', '')}`,
+    });
+  }
+
+  async generateSVGQRCode(data: QRPaymentData): Promise<string> {
+    const paymentString = await this.generatePaymentString(data);
     
-    return `data:image/svg+xml;base64,${btoa(svg)}`;
+    // Generate SVG QR code for better scalability
+    const svgString = await QRCode.toString(paymentString, {
+      type: 'svg',
+      errorCorrectionLevel: 'M',
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      },
+      width: 300
+    });
+    
+    return `data:image/svg+xml;base64,${btoa(svgString)}`;
+  }
+
+  formatPaymentDetails(paymentString: string): { [key: string]: string } {
+    const details: { [key: string]: string } = {};
+    const parts = paymentString.split('*');
+    
+    for (const part of parts) {
+      const [key, value] = part.split(':');
+      if (key && value) {
+        switch (key) {
+          case 'ACC':
+            details['Účet'] = value;
+            break;
+          case 'AM':
+            details['Částka'] = `${value} CZK`;
+            break;
+          case 'MSG':
+            details['Zpráva'] = decodeURIComponent(value);
+            break;
+          case 'X-VS':
+            details['Variabilní symbol'] = value;
+            break;
+          case 'RN':
+            details['Příjemce'] = decodeURIComponent(value);
+            break;
+        }
+      }
+    }
+    
+    return details;
   }
 
   calculateEqualShares(totalAmount: number, numberOfPlayers: number): number[] {
