@@ -11,6 +11,7 @@ import { OwnerDashboard } from "./pages/owner/OwnerDashboard";
 import { GuestReservation } from "./pages/guest/GuestReservation";
 import NotFound from "./pages/NotFound";
 import { SetupOwner } from "./pages/SetupOwner";
+import { ResetPassword } from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,9 @@ const App = () => (
           
           {/* Owner setup */}
           <Route path="/setup-owner" element={<SetupOwner />} />
+          
+          {/* Password reset */}
+          <Route path="/reset-heslo" element={<ResetPassword />} />
           
           {/* Guest reservation */}
           <Route path="/rezervace/host" element={<GuestReservation />} />

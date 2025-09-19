@@ -128,7 +128,7 @@ export const EntryPage = () => {
               </CardTitle>
               <CardDescription>
                 {activeTab === 'signin' 
-                  ? 'Zadejte svůj email nebo uživatelské jméno a heslo'
+                  ? 'Zadejte svou emailovou adresu a heslo'
                   : 'Vytvořte si nový účet pro rezervace kurtů'
                 }
               </CardDescription>
@@ -137,18 +137,15 @@ export const EntryPage = () => {
               {activeTab === 'signin' ? (
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signin-identifier">Přihlašovací údaj</Label>
+                    <Label htmlFor="signin-email">Emailová adresa</Label>
                     <Input
-                      id="signin-identifier"
-                      type="text"
-                      placeholder="email@example.cz nebo uživatelské jméno"
+                      id="signin-email"
+                      type="email"
+                      placeholder="vase.jmeno@email.cz"
                       value={formData.loginIdentifier}
                       onChange={(e) => handleInputChange('loginIdentifier', e.target.value)}
                       required
                     />
-                    <p className="text-sm text-muted-foreground">
-                      Hráči zadávají email. Zaměstnanci zadávají uživatelské jméno.
-                    </p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signin-password">Heslo</Label>
@@ -159,6 +156,16 @@ export const EntryPage = () => {
                       onChange={(e) => handleInputChange('password', e.target.value)}
                       required
                     />
+                    <div className="text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => window.location.href = '/reset-heslo'}
+                        className="text-xs text-muted-foreground hover:text-primary p-0 h-auto"
+                      >
+                        Zapomněli jste heslo?
+                      </Button>
+                    </div>
                   </div>
                   <Button 
                     type="submit" 

@@ -13,9 +13,104 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { action, password } = await req.json()
+    const { action, password, email } = await req.json()
     
     console.log('Owner bootstrap action:', action)
+
+    if (action === 'assignOwnerByEmail') {
+      // Security check: only allow jsvec.jr@gmail.com
+      if (email !== 'jsvec.jr@gmail.com') {
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'Unauthorized email address' 
+          }),
+          { 
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        )
+      }
+
+      try {
+        // Find the auth user by email
+        const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers()
+        
+        if (authError) {
+          console.error('Error listing auth users:', authError)
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: 'Failed to find user' 
+            }),
+            { 
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            }
+          )
+        }
+
+        const authUser = authUsers.users.find(user => user.email === email)
+        
+        if (!authUser) {
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: 'User not found' 
+            }),
+            { 
+              status: 404,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            }
+          )
+        }
+
+        // Upsert into public.users table with owner role
+        const { error: upsertError } = await supabaseAdmin
+          .from('users')
+          .upsert({
+            id: authUser.id,
+            email: authUser.email,
+            name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Owner',
+            role: 'owner'
+          }, {
+            onConflict: 'id'
+          })
+
+        if (upsertError) {
+          console.error('Error upserting user:', upsertError)
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: 'Failed to assign owner role' 
+            }),
+            { 
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            }
+          )
+        }
+
+        console.log('Successfully assigned owner role to:', email)
+        return new Response(
+          JSON.stringify({ success: true }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+
+      } catch (error) {
+        console.error('Error in assignOwnerByEmail:', error)
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'Internal server error' 
+          }),
+          { 
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        )
+      }
+    }
 
     if (action === 'check') {
       // Check if owner auth user exists

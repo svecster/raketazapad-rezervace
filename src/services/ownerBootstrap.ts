@@ -176,6 +176,37 @@ export class OwnerBootstrapService {
   }
 
   /**
+   * Assigns owner role to a specific email address
+   * @param email - Email address to assign owner role to
+   * @returns Promise with success/error result
+   */
+  static async assignOwnerByEmail(email: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      console.log('Assigning owner role to email:', email);
+      
+      const { data, error } = await supabase.functions.invoke('owner-bootstrap', {
+        body: { action: 'assignOwnerByEmail', email }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        return { success: false, error: error.message };
+      }
+
+      if (!data?.success) {
+        console.error('Assignment failed:', data?.error);
+        return { success: false, error: data?.error || 'Unknown error' };
+      }
+
+      console.log('Owner role assigned successfully');
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error in assignOwnerByEmail:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Reset staff user password
    */
   static async resetStaffPassword(userId: string, newPassword: string): Promise<{ success: boolean; error?: string }> {

@@ -106,6 +106,16 @@ export const AuthPage = () => {
                       onChange={(e) => handleInputChange('password', e.target.value)}
                       required
                     />
+                    <div className="text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => window.location.href = '/reset-heslo'}
+                        className="text-xs text-muted-foreground hover:text-primary p-0 h-auto"
+                      >
+                        Zapomněli jste heslo?
+                      </Button>
+                    </div>
                   </div>
                   <Button 
                     type="submit" 

@@ -120,11 +120,17 @@ export const useAuth = () => {
     }
   };
 
-  const signIn = async (loginIdentifier: string, password: string) => {
+  const signIn = async (email: string, password: string) => {
     try {
-      // Import auth utility here to avoid circular imports
-      const { resolveLoginIdentifier } = await import('@/lib/utils/auth');
-      const { email } = resolveLoginIdentifier(loginIdentifier);
+      // Validate email format
+      if (!email.includes('@')) {
+        toast({
+          title: "Chyba při přihlášení",
+          description: "Zadejte platnou emailovou adresu",
+          variant: "destructive",
+        });
+        return { error: new Error('Invalid email format') };
+      }
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -142,6 +148,30 @@ export const useAuth = () => {
         return { error };
       }
 
+      // Handle owner assignment for jsvec.jr@gmail.com
+      if (email === 'jsvec.jr@gmail.com') {
+        setTimeout(async () => {
+          try {
+            const { OwnerBootstrapService } = await import('@/services/ownerBootstrap');
+            const result = await OwnerBootstrapService.assignOwnerByEmail(email);
+            if (result.success) {
+              // Refresh profile after owner assignment
+              const { data: updatedProfile } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', data.user.id)
+                .single();
+              
+              if (updatedProfile) {
+                setProfile(updatedProfile);
+              }
+            }
+          } catch (error) {
+            console.error('Error assigning owner role:', error);
+          }
+        }, 100);
+      }
+
       toast({
         title: "Přihlášení úspěšné",
         description: `Vítejte zpět!`,
@@ -151,6 +181,68 @@ export const useAuth = () => {
     } catch (error: any) {
       toast({
         title: "Chyba při přihlášení",
+        description: error.message,
+        variant: "destructive",
+      });
+      return { error };
+    }
+  };
+
+  const requestPasswordReset = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-heslo`
+      });
+
+      if (error) {
+        toast({
+          title: "Chyba při obnově hesla",
+          description: error.message,
+          variant: "destructive",
+        });
+        return { error };
+      }
+
+      toast({
+        title: "Email odeslán",
+        description: "Zkontrolujte svou emailovou schránku pro odkaz na obnovu hesla.",
+      });
+
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: "Chyba při obnově hesla",
+        description: error.message,
+        variant: "destructive",
+      });
+      return { error };
+    }
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        toast({
+          title: "Chyba při změně hesla",
+          description: error.message,
+          variant: "destructive",
+        });
+        return { error };
+      }
+
+      toast({
+        title: "Heslo změněno",
+        description: "Vaše heslo bylo úspěšně změněno.",
+      });
+
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: "Chyba při změně hesla",
         description: error.message,
         variant: "destructive",
       });
@@ -228,6 +320,8 @@ export const useAuth = () => {
     signIn,
     signOut,
     updateProfile,
+    requestPasswordReset,
+    updatePassword,
     isPlayer: profile?.role === 'player',
     isStaff: profile?.role === 'staff' || profile?.role === 'owner',
     isOwner: profile?.role === 'owner',
