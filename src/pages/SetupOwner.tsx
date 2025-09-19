@@ -43,10 +43,10 @@ export const SetupOwner = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
+    if (formData.password.length < 8) {
       toast({
         title: "Chyba",
-        description: "Heslo musí mít alespoň 6 znaků",
+        description: "Heslo musí mít alespoň 8 znaků",
         variant: "destructive",
       });
       return;
@@ -54,18 +54,39 @@ export const SetupOwner = () => {
 
     setIsLoading(true);
 
-    const result = await OwnerBootstrapService.createOwner(formData.password);
+    try {
+      // First ensure owner auth user exists, then update password
+      const createResult = await OwnerBootstrapService.createOwner();
+      if (!createResult.success) {
+        toast({
+          title: "Chyba při vytváření vlastníka",
+          description: createResult.error || 'Neznámá chyba',
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
 
-    if (result.success) {
+      // Now update the password
+      const result = await OwnerBootstrapService.updateOwnerPassword(formData.password);
+
+      if (result.success) {
+        toast({
+          title: "Úspěch",
+          description: "Vlastník byl úspěšně vytvořen. Nyní se můžete přihlásit.",
+        });
+        navigate('/auth');
+      } else {
+        toast({
+          title: "Chyba při nastavování hesla",
+          description: result.error || 'Neznámá chyba',
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
       toast({
-        title: "Úspěch",
-        description: "Vlastník byl úspěšně vytvořen. Nyní se můžete přihlásit.",
-      });
-      navigate('/auth');
-    } else {
-      toast({
-        title: "Chyba při vytváření vlastníka",
-        description: result.error || 'Neznámá chyba',
+        title: "Chyba",
+        description: error.message || 'Došlo k neočekávané chybě',
         variant: "destructive",
       });
     }
@@ -123,7 +144,7 @@ export const SetupOwner = () => {
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
 

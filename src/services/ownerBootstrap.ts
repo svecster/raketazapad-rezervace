@@ -1,5 +1,4 @@
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 
 /**
  * Service for ensuring owner account exists and is properly set up
@@ -7,64 +6,73 @@ import { useToast } from '@/hooks/use-toast';
 export class OwnerBootstrapService {
   private static readonly OWNER_EMAIL = 'admin@club.local';
   private static readonly OWNER_USERNAME = 'admin';
-  private static readonly DEFAULT_PASSWORD = 'admin';
 
   /**
-   * Check if owner account exists in database
+   * Check if owner account exists (both auth and public user)
    */
-  static async checkOwnerExists(): Promise<boolean> {
+  static async checkOwnerExists(): Promise<{ exists: boolean; needsSetup: boolean; error?: string }> {
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('role', 'owner')
-        .eq('username', this.OWNER_USERNAME)
-        .single();
+      const { data, error } = await supabase.functions.invoke('owner-bootstrap', {
+        body: { action: 'check' }
+      });
 
-      return !error && !!data;
-    } catch (error) {
+      if (error) {
+        console.error('Error checking owner existence:', error);
+        return { exists: false, needsSetup: true, error: error.message };
+      }
+
+      return { 
+        exists: data.authUserExists && data.publicUserExists, 
+        needsSetup: data.needsSetup 
+      };
+    } catch (error: any) {
       console.error('Error checking owner existence:', error);
-      return false;
+      return { exists: false, needsSetup: true, error: error.message };
     }
   }
 
   /**
-   * Create owner account through setup flow
+   * Create owner account with default credentials
    */
-  static async createOwner(password: string): Promise<{ success: boolean; error?: string }> {
+  static async createOwner(): Promise<{ success: boolean; error?: string }> {
     try {
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: this.OWNER_EMAIL,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            name: 'Admin',
-            username: this.OWNER_USERNAME
-          }
-        }
+      const { data, error } = await supabase.functions.invoke('owner-bootstrap', {
+        body: { action: 'create' }
       });
 
-      if (authError) {
-        return { success: false, error: authError.message };
+      if (error) {
+        return { success: false, error: error.message };
       }
 
-      if (authData.user) {
-        // Create/update user record
-        const { error: userError } = await supabase
-          .from('users')
-          .upsert({
-            id: authData.user.id,
-            name: 'Admin',
-            email: this.OWNER_EMAIL,
-            username: this.OWNER_USERNAME,
-            role: 'owner'
-          });
+      if (!data.success) {
+        return { success: false, error: data.error };
+      }
 
-        if (userError) {
-          return { success: false, error: userError.message };
-        }
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Update owner password through admin API
+   */
+  static async updateOwnerPassword(password: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (password.length < 8) {
+        return { success: false, error: 'Heslo musí mít alespoň 8 znaků' };
+      }
+
+      const { data, error } = await supabase.functions.invoke('owner-bootstrap', {
+        body: { action: 'updatePassword', password }
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      if (!data.success) {
+        return { success: false, error: data.error };
       }
 
       return { success: true };
@@ -77,15 +85,27 @@ export class OwnerBootstrapService {
    * Try to ensure owner exists, redirect to setup if needed
    */
   static async ensureOwner(): Promise<boolean> {
-    const ownerExists = await this.checkOwnerExists();
-    
-    if (!ownerExists) {
-      // Redirect to setup page
+    try {
+      const { exists, needsSetup } = await this.checkOwnerExists();
+      
+      if (needsSetup) {
+        // Try to create owner with default credentials first
+        const createResult = await this.createOwner();
+        if (createResult.success) {
+          return true;
+        }
+        
+        // If creation fails, redirect to setup page
+        window.location.href = '/setup-owner';
+        return false;
+      }
+      
+      return exists;
+    } catch (error) {
+      console.error('Error ensuring owner:', error);
       window.location.href = '/setup-owner';
       return false;
     }
-    
-    return true;
   }
 
   /**
