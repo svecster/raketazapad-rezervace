@@ -134,42 +134,19 @@ export class OwnerBootstrapService {
     role: 'staff' | 'owner';
   }): Promise<{ success: boolean; error?: string; aliasEmail?: string }> {
     try {
-      const aliasEmail = `${userData.username}@club.local`;
-
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: aliasEmail,
-        password: userData.password,
-        email_confirm: true,
-        user_metadata: {
-          name: userData.name,
-          username: userData.username
-        }
+      const { data, error } = await supabase.functions.invoke('owner-bootstrap', {
+        body: { action: 'createStaffUser', userData }
       });
 
-      if (authError) {
-        return { success: false, error: authError.message };
+      if (error) {
+        return { success: false, error: error.message };
       }
 
-      if (authData.user) {
-        // Create user record
-        const { error: userError } = await supabase
-          .from('users')
-          .upsert({
-            id: authData.user.id,
-            name: userData.name,
-            email: aliasEmail,
-            username: userData.username,
-            phone: userData.phone,
-            role: userData.role
-          });
-
-        if (userError) {
-          return { success: false, error: userError.message };
-        }
+      if (!data.success) {
+        return { success: false, error: data.error };
       }
 
-      return { success: true, aliasEmail };
+      return { success: true, aliasEmail: data.aliasEmail };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
@@ -211,12 +188,16 @@ export class OwnerBootstrapService {
    */
   static async resetStaffPassword(userId: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await supabase.auth.admin.updateUserById(userId, {
-        password: newPassword
+      const { data, error } = await supabase.functions.invoke('owner-bootstrap', {
+        body: { action: 'resetStaffPassword', userData: { userId, newPassword } }
       });
 
       if (error) {
         return { success: false, error: error.message };
+      }
+
+      if (!data.success) {
+        return { success: false, error: data.error };
       }
 
       return { success: true };

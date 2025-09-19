@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { action, password, email } = await req.json()
+    const { action, password, email, userData } = await req.json()
     
     console.log('Owner bootstrap action:', action)
 
@@ -284,6 +284,94 @@ Deno.serve(async (req) => {
         JSON.stringify({ success: true }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
+    }
+
+    if (action === 'createStaffUser') {
+      try {
+        const aliasEmail = `${userData.username}@club.local`;
+
+        // Create auth user with admin privileges
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+          email: aliasEmail,
+          password: userData.password,
+          email_confirm: true,
+          user_metadata: {
+            name: userData.name,
+            username: userData.username
+          }
+        });
+
+        if (authError) {
+          console.error('Auth user creation error:', authError);
+          return new Response(
+            JSON.stringify({ success: false, error: authError.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        if (authData.user) {
+          // Create user record in public schema
+          const { error: userError } = await supabaseAdmin
+            .from('users')
+            .upsert({
+              id: authData.user.id,
+              name: userData.name,
+              email: aliasEmail,
+              username: userData.username,
+              phone: userData.phone,
+              role: userData.role
+            });
+
+          if (userError) {
+            console.error('User record creation error:', userError);
+            return new Response(
+              JSON.stringify({ success: false, error: userError.message }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+        }
+
+        console.log(`Successfully created ${userData.role} user: ${userData.username}`);
+        return new Response(
+          JSON.stringify({ success: true, aliasEmail }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (error: any) {
+        console.error('Error creating staff user:', error);
+        return new Response(
+          JSON.stringify({ success: false, error: error.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    if (action === 'resetStaffPassword') {
+      try {
+        const { error } = await supabaseAdmin.auth.admin.updateUserById(userData.userId, {
+          password: userData.newPassword
+        });
+
+        if (error) {
+          console.error('Password reset error:', error);
+          return new Response(
+            JSON.stringify({ success: false, error: error.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        console.log(`Successfully reset password for user: ${userData.userId}`);
+        return new Response(
+          JSON.stringify({ success: true }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (error: any) {
+        console.error('Error resetting staff password:', error);
+        return new Response(
+          JSON.stringify({ success: false, error: error.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
     }
 
     return new Response(
