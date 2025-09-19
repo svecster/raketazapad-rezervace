@@ -13,9 +13,10 @@ export const EntryPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'signin' | 'signup' | 'guest'>('signin');
   const [formData, setFormData] = useState({
-    email: '',
+    loginIdentifier: '',
     password: '',
     name: '',
+    email: '',
     confirmPassword: '',
   });
 
@@ -30,10 +31,10 @@ export const EntryPage = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) return;
+    if (!formData.loginIdentifier || !formData.password) return;
 
     setIsLoading(true);
-    await signIn(formData.email, formData.password);
+    await signIn(formData.loginIdentifier, formData.password);
     setIsLoading(false);
   };
 
@@ -51,7 +52,7 @@ export const EntryPage = () => {
   };
 
   const handleGuestReservation = () => {
-    // Navigate to guest reservation form
+    // Navigate to guest reservation wizard
     window.location.href = '/rezervace/host';
   };
 
@@ -117,7 +118,7 @@ export const EntryPage = () => {
               </CardTitle>
               <CardDescription>
                 {activeTab === 'signin' 
-                  ? 'Zadejte svůj email a heslo pro přihlášení'
+                  ? 'Zadejte svůj email nebo uživatelské jméno a heslo'
                   : 'Vytvořte si nový účet pro rezervace kurtů'
                 }
               </CardDescription>
@@ -126,15 +127,18 @@ export const EntryPage = () => {
               {activeTab === 'signin' ? (
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
+                    <Label htmlFor="signin-identifier">Přihlašovací údaj</Label>
                     <Input
-                      id="signin-email"
-                      type="email"
-                      placeholder="vase.jmeno@email.cz"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      id="signin-identifier"
+                      type="text"
+                      placeholder="email@example.cz nebo uživatelské jméno"
+                      value={formData.loginIdentifier}
+                      onChange={(e) => handleInputChange('loginIdentifier', e.target.value)}
                       required
                     />
+                    <p className="text-sm text-muted-foreground">
+                      Hráči zadávají email. Zaměstnanci zadávají uživatelské jméno.
+                    </p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signin-password">Heslo</Label>

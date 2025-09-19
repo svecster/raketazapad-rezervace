@@ -120,8 +120,12 @@ export const useAuth = () => {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (loginIdentifier: string, password: string) => {
     try {
+      // Import auth utility here to avoid circular imports
+      const { resolveLoginIdentifier } = await import('@/lib/utils/auth');
+      const { email } = resolveLoginIdentifier(loginIdentifier);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -142,13 +146,6 @@ export const useAuth = () => {
         title: "Přihlášení úspěšné",
         description: `Vítejte zpět!`,
       });
-
-      // Role-based redirect
-      setTimeout(() => {
-        if (data.user) {
-          // Will be handled by auth state change
-        }
-      }, 100);
 
       return { data, error: null };
     } catch (error: any) {
