@@ -86,20 +86,35 @@ export class OwnerBootstrapService {
    */
   static async ensureOwner(): Promise<boolean> {
     try {
-      const { exists, needsSetup } = await this.checkOwnerExists();
+      console.log('Checking if owner exists...');
+      const { exists, needsSetup, error } = await this.checkOwnerExists();
+      
+      if (error) {
+        console.error('Error checking owner:', error);
+        window.location.href = '/setup-owner';
+        return false;
+      }
+      
+      console.log('Owner check result:', { exists, needsSetup });
       
       if (needsSetup) {
+        console.log('Owner needs setup, attempting to create...');
         // Try to create owner with default credentials first
         const createResult = await this.createOwner();
+        console.log('Owner creation result:', createResult);
+        
         if (createResult.success) {
+          console.log('Owner created successfully');
           return true;
         }
         
+        console.log('Owner creation failed, redirecting to setup');
         // If creation fails, redirect to setup page
         window.location.href = '/setup-owner';
         return false;
       }
       
+      console.log('Owner exists:', exists);
       return exists;
     } catch (error) {
       console.error('Error ensuring owner:', error);

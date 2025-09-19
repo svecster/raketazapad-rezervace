@@ -92,9 +92,31 @@ Deno.serve(async (req) => {
         }
 
         authUserId = authData.user.id
+        console.log('Created auth user with ID:', authUserId)
+      } else {
+        console.log('Auth user already exists with ID:', authUserId)
       }
 
-      // Create/update public user record
+      // Check if there's an existing dummy user record and delete it
+      const { data: existingUser, error: checkError } = await supabaseAdmin
+        .from('users')
+        .select('id')
+        .eq('email', 'admin@club.local')
+        .single()
+
+      if (!checkError && existingUser && existingUser.id !== authUserId) {
+        console.log('Deleting dummy user record:', existingUser.id)
+        const { error: deleteError } = await supabaseAdmin
+          .from('users')
+          .delete()
+          .eq('id', existingUser.id)
+        
+        if (deleteError) {
+          console.error('Error deleting dummy user:', deleteError)
+        }
+      }
+
+      // Create/update public user record with correct auth user ID
       const { error: publicError } = await supabaseAdmin
         .from('users')
         .upsert({
@@ -115,6 +137,7 @@ Deno.serve(async (req) => {
         )
       }
 
+      console.log('Successfully created/updated owner user')
       return new Response(
         JSON.stringify({ success: true }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
