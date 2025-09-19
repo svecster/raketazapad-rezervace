@@ -177,6 +177,252 @@ export type Database = {
         }
         Relationships: []
       }
+      checkout_accounts: {
+        Row: {
+          assigned_players: Json
+          checkout_id: string
+          created_at: string
+          id: string
+          name: string
+          paid_amount: number
+          payment_methods: Json
+          payment_status: string
+          split_config: Json
+          split_type: string
+          total_amount: number
+        }
+        Insert: {
+          assigned_players?: Json
+          checkout_id: string
+          created_at?: string
+          id?: string
+          name: string
+          paid_amount?: number
+          payment_methods?: Json
+          payment_status?: string
+          split_config?: Json
+          split_type?: string
+          total_amount?: number
+        }
+        Update: {
+          assigned_players?: Json
+          checkout_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          paid_amount?: number
+          payment_methods?: Json
+          payment_status?: string
+          split_config?: Json
+          split_type?: string
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkout_accounts_checkout_id_fkey"
+            columns: ["checkout_id"]
+            isOneToOne: false
+            referencedRelation: "checkouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checkout_items: {
+        Row: {
+          assigned_to_players: Json | null
+          checkout_account_id: string | null
+          checkout_id: string
+          created_at: string
+          description: string | null
+          discount_code: string | null
+          discount_type: string | null
+          discount_value: number | null
+          id: string
+          name: string
+          plu_code: string | null
+          quantity: number
+          total_price: number
+          type: string
+          unit_price: number
+        }
+        Insert: {
+          assigned_to_players?: Json | null
+          checkout_account_id?: string | null
+          checkout_id: string
+          created_at?: string
+          description?: string | null
+          discount_code?: string | null
+          discount_type?: string | null
+          discount_value?: number | null
+          id?: string
+          name: string
+          plu_code?: string | null
+          quantity?: number
+          total_price: number
+          type: string
+          unit_price: number
+        }
+        Update: {
+          assigned_to_players?: Json | null
+          checkout_account_id?: string | null
+          checkout_id?: string
+          created_at?: string
+          description?: string | null
+          discount_code?: string | null
+          discount_type?: string | null
+          discount_value?: number | null
+          id?: string
+          name?: string
+          plu_code?: string | null
+          quantity?: number
+          total_price?: number
+          type?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkout_items_checkout_account_id_fkey"
+            columns: ["checkout_account_id"]
+            isOneToOne: false
+            referencedRelation: "checkout_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checkout_items_checkout_id_fkey"
+            columns: ["checkout_id"]
+            isOneToOne: false
+            referencedRelation: "checkouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checkout_payments: {
+        Row: {
+          amount: number
+          cash_change: number | null
+          cash_received: number | null
+          checkout_account_id: string
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          id: string
+          ledger_entry_id: string | null
+          notes: string | null
+          payment_method: string
+          qr_code_data: string | null
+          qr_payment_string: string | null
+          qr_variable_symbol: string | null
+        }
+        Insert: {
+          amount: number
+          cash_change?: number | null
+          cash_received?: number | null
+          checkout_account_id: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          id?: string
+          ledger_entry_id?: string | null
+          notes?: string | null
+          payment_method: string
+          qr_code_data?: string | null
+          qr_payment_string?: string | null
+          qr_variable_symbol?: string | null
+        }
+        Update: {
+          amount?: number
+          cash_change?: number | null
+          cash_received?: number | null
+          checkout_account_id?: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          id?: string
+          ledger_entry_id?: string | null
+          notes?: string | null
+          payment_method?: string
+          qr_code_data?: string | null
+          qr_payment_string?: string | null
+          qr_variable_symbol?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkout_payments_checkout_account_id_fkey"
+            columns: ["checkout_account_id"]
+            isOneToOne: false
+            referencedRelation: "checkout_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checkout_payments_confirmed_by_fkey"
+            columns: ["confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checkout_payments_ledger_entry_id_fkey"
+            columns: ["ledger_entry_id"]
+            isOneToOne: false
+            referencedRelation: "cash_ledger"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checkouts: {
+        Row: {
+          additional_reservations: Json | null
+          created_at: string
+          id: string
+          include_court_price: boolean
+          notes: string | null
+          reservation_id: string | null
+          staff_user_id: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          additional_reservations?: Json | null
+          created_at?: string
+          id?: string
+          include_court_price?: boolean
+          notes?: string | null
+          reservation_id?: string | null
+          staff_user_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          additional_reservations?: Json | null
+          created_at?: string
+          id?: string
+          include_court_price?: boolean
+          notes?: string | null
+          reservation_id?: string | null
+          staff_user_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkouts_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checkouts_staff_user_id_fkey"
+            columns: ["staff_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courts: {
         Row: {
           id: string
@@ -419,6 +665,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_checkout_totals: {
+        Args: { checkout_uuid: string }
+        Returns: undefined
+      }
       generate_guest_token: {
         Args: Record<PropertyKey, never>
         Returns: string
