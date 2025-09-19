@@ -22,13 +22,38 @@ export const ResetPassword = () => {
   useEffect(() => {
     // Check if we're in recovery mode (user clicked email link)
     const checkRecoveryMode = async () => {
+      // Parse URL hash fragment for type=recovery
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const isRecovery = hashParams.get('type') === 'recovery';
+      
+      console.log('URL hash:', window.location.hash);
+      console.log('Recovery type detected:', isRecovery);
+      
+      if (isRecovery) {
+        setMode('reset');
+        return;
+      }
+      
+      // Alternative: Check session for recovery
       const { data: { session } } = await supabase.auth.getSession();
-      if (session && window.location.hash.includes('type=recovery')) {
+      if (session && session.user?.app_metadata?.provider === 'recovery') {
+        console.log('Recovery session detected');
         setMode('reset');
       }
     };
     
+    // Also listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth event:', event);
+      if (event === 'PASSWORD_RECOVERY') {
+        console.log('Password recovery event detected');
+        setMode('reset');
+      }
+    });
+    
     checkRecoveryMode();
+    
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
