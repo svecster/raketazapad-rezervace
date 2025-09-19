@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { 
-  CreditCard,
   Banknote,
   QrCode,
   CheckCircle,
@@ -15,13 +14,16 @@ import {
   Mail,
   Phone,
   Users,
-  Loader2
+  Loader2,
+  Check
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { formatCurrency } from '@/lib/utils/currency';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { QRPaymentModal } from '@/components/payment/QRPaymentModal';
+import { cashRegisterService } from '@/services/cashRegisterService';
 import type { ReservationData } from '../ReservationModal';
 
 interface SummaryProps {
@@ -29,7 +31,7 @@ interface SummaryProps {
   onPaymentComplete: (reservationId: string) => void;
 }
 
-type PaymentMethod = 'cash' | 'card' | 'qr';
+type PaymentMethod = 'cash' | 'qr';
 
 export const Summary = ({ reservationData, onPaymentComplete }: SummaryProps) => {
   const [selectedPayment, setSelectedPayment] = useState<'cash' | 'qr'>('cash');
@@ -102,17 +104,40 @@ export const Summary = ({ reservationData, onPaymentComplete }: SummaryProps) =>
         throw error;
       }
 
-      // Generate QR code if QR payment selected
-      if (selectedPayment === 'qr') {
-        await generateQRCode(reservation.id, totalPrice);
+      if (selectedPayment === 'cash') {
+        // Record cash payment
+        await cashRegisterService.recordSale(
+          totalPrice,
+          `Rezervace ${reservationData.court?.name} - ${reservationData.date}`,
+          'reservation',
+          reservation.id
+        );
+        
+        // Update reservation as paid
+        await supabase
+          .from('reservations')
+          .update({ 
+            status: 'paid', 
+            payment_confirmed_at: new Date().toISOString() 
+          })
+          .eq('id', reservation.id);
+          
+        toast({
+          title: "Rezervace vytvořena",
+          description: `Rezervace byla zaplacena hotově a potvrzena`
+        });
+        
+        onPaymentComplete(reservation.id);
+      } else {
+        // QR payment - show QR modal
+        setReservationId(reservation.id);
+        setShowQRModal(true);
+        
+        toast({
+          title: "Rezervace vytvořena",
+          description: `Rezervace čeká na platbu`
+        });
       }
-
-      toast({
-        title: "Rezervace vytvořena",
-        description: `Rezervace byla úspěšně vytvořena. ID: ${reservation.id.slice(0, 8)}`,
-      });
-
-      onPaymentComplete(reservation.id);
 
     } catch (error: any) {
       toast({
@@ -125,17 +150,42 @@ export const Summary = ({ reservationData, onPaymentComplete }: SummaryProps) =>
     }
   };
 
-  const generateQRCode = async (reservationId: string, amount: number) => {
-    // Mock QR code generation - in real app, integrate with QR payment provider
-    const qrPayload = {
-      amount: amount,
-      currency: 'CZK',
-      reference: reservationId.slice(0, 8),
-      description: `Rezervace ${reservationData.court?.name}`
-    };
+  const handleQRPaymentConfirmed = async () => {
+    if (!reservationId) return;
     
-    // In real implementation, call QR payment service
-    setQrCode(`data:text/plain,${JSON.stringify(qrPayload)}`);
+    try {
+      // Update reservation as paid
+      await supabase
+        .from('reservations')
+        .update({ 
+          status: 'paid', 
+          payment_confirmed_at: new Date().toISOString() 
+        })
+        .eq('id', reservationId);
+      
+      // Record QR payment
+      await cashRegisterService.recordQRPayment(
+        totalPrice,
+        `Rezervace ${reservationData.court?.name} - ${reservationData.date}`,
+        'reservation',
+        reservationId
+      );
+      
+      toast({
+        title: "Platba potvrzena",
+        description: "Rezervace byla úspěšně zaplacena"
+      });
+      
+      setShowQRModal(false);
+      onPaymentComplete(reservationId);
+    } catch (error) {
+      console.error('Error confirming payment:', error);
+      toast({
+        title: "Chyba",
+        description: "Nepodařilo se potvrdit platbu",
+        variant: "destructive"
+      });
+    }
   };
 
   const paymentMethods = [
@@ -145,13 +195,6 @@ export const Summary = ({ reservationData, onPaymentComplete }: SummaryProps) =>
       description: 'Zaplatíte při příchodu na recepci',
       icon: Banknote,
       available: true
-    },
-    {
-      id: 'card' as PaymentMethod,
-      name: 'Platební karta',
-      description: 'Online platba kartou (připravujeme)',
-      icon: CreditCard,
-      available: false
     },
     {
       id: 'qr' as PaymentMethod,
@@ -324,18 +367,21 @@ export const Summary = ({ reservationData, onPaymentComplete }: SummaryProps) =>
             </CardContent>
           </Card>
 
-          {/* QR Code display */}
-          {selectedPayment === 'qr' && qrCode && (
+          {/* QR Payment Info */}
+          {selectedPayment === 'qr' && (
             <Card>
               <CardHeader>
-                <CardTitle>QR Platba</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <QrCode className="h-5 w-5" />
+                  QR Platba
+                </CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
+              <CardContent className="text-center space-y-2">
                 <div className="bg-muted p-4 rounded-lg mb-2">
-                  <QrCode className="h-24 w-24 mx-auto text-muted-foreground" />
+                  <QrCode className="h-16 w-16 mx-auto text-muted-foreground" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Naskenujte QR kód v bankovní aplikaci
+                  Po vytvoření rezervace se zobrazí QR kód pro platbu
                 </p>
               </CardContent>
             </Card>
@@ -366,6 +412,18 @@ export const Summary = ({ reservationData, onPaymentComplete }: SummaryProps) =>
           </p>
         </div>
       </div>
+
+      {/* QR Payment Modal */}
+      <QRPaymentModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        onPaymentConfirmed={handleQRPaymentConfirmed}
+        amount={totalPrice}
+        description={`Rezervace ${reservationData.court?.name} - ${reservationData.date}`}
+        reservationId={reservationId || undefined}
+        courtName={reservationData.court?.name}
+        date={reservationData.date}
+      />
     </div>
   );
 };
