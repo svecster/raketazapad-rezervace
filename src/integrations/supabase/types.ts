@@ -164,6 +164,8 @@ export type Database = {
           court_id: string | null
           created_at: string | null
           end_time: string
+          guest_contact: Json | null
+          guest_token: string | null
           id: string
           price: number
           start_time: string
@@ -174,6 +176,8 @@ export type Database = {
           court_id?: string | null
           created_at?: string | null
           end_time: string
+          guest_contact?: Json | null
+          guest_token?: string | null
           id?: string
           price: number
           start_time: string
@@ -184,6 +188,8 @@ export type Database = {
           court_id?: string | null
           created_at?: string | null
           end_time?: string
+          guest_contact?: Json | null
+          guest_token?: string | null
           id?: string
           price?: number
           start_time?: string
@@ -239,6 +245,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_guest_token: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_user_role: {
         Args: { user_uuid: string }
         Returns: Database["public"]["Enums"]["user_role"]

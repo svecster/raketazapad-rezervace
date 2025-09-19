@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 export interface UserProfile {
   id: string;
@@ -18,6 +19,7 @@ export const useAuth = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Set up auth state listener
@@ -40,6 +42,21 @@ export const useAuth = () => {
                 console.error('Error fetching profile:', error);
               } else {
                 setProfile(profile);
+                
+                // Role-based redirect after profile is loaded
+                if (event === 'SIGNED_IN' && profile) {
+                  switch (profile.role) {
+                    case 'owner':
+                      navigate('/admin/majitel');
+                      break;
+                    case 'staff':
+                      navigate('/admin/obsluha');
+                      break;
+                    case 'player':
+                      navigate('/app/hrac');
+                      break;
+                  }
+                }
               }
             } catch (error) {
               console.error('Error in profile fetch:', error);
@@ -125,6 +142,13 @@ export const useAuth = () => {
         title: "Přihlášení úspěšné",
         description: `Vítejte zpět!`,
       });
+
+      // Role-based redirect
+      setTimeout(() => {
+        if (data.user) {
+          // Will be handled by auth state change
+        }
+      }, 100);
 
       return { data, error: null };
     } catch (error: any) {

@@ -8,9 +8,10 @@ interface LayoutProps {
   children: ReactNode;
   requireAuth?: boolean;
   requiredRole?: 'player' | 'staff' | 'owner';
+  allowedRoles?: Array<'player' | 'staff' | 'owner'>;
 }
 
-export const Layout = ({ children, requireAuth = false, requiredRole }: LayoutProps) => {
+export const Layout = ({ children, requireAuth = false, requiredRole, allowedRoles }: LayoutProps) => {
   const { user, profile, loading } = useAuth();
   const location = useLocation();
 
@@ -29,11 +30,11 @@ export const Layout = ({ children, requireAuth = false, requiredRole }: LayoutPr
   }
 
   // Redirect if user doesn't have required role
-  if (requiredRole && profile) {
-    if (requiredRole === 'staff' && !['staff', 'owner'].includes(profile.role)) {
-      return <Navigate to="/" replace />;
-    }
-    if (requiredRole === 'owner' && profile.role !== 'owner') {
+  if (profile && (requiredRole || allowedRoles)) {
+    const hasRequiredRole = requiredRole ? profile.role === requiredRole : true;
+    const hasAllowedRole = allowedRoles ? allowedRoles.includes(profile.role) : true;
+    
+    if (!hasRequiredRole || !hasAllowedRole) {
       return <Navigate to="/" replace />;
     }
   }
