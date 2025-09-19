@@ -14,7 +14,226 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: string
+          details: Json | null
+          id: string
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          details?: Json | null
+          id?: string
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          details?: Json | null
+          id?: string
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bar_orders: {
+        Row: {
+          created_at: string | null
+          id: string
+          items: Json | null
+          payment_status: Database["public"]["Enums"]["payment_status"] | null
+          reservation_id: string | null
+          total_price: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          items?: Json | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          reservation_id?: string | null
+          total_price?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          items?: Json | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          reservation_id?: string | null
+          total_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bar_orders_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cash_register: {
+        Row: {
+          balance: number | null
+          cash_in: number | null
+          cash_out: number | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          shift_id: string | null
+        }
+        Insert: {
+          balance?: number | null
+          cash_in?: number | null
+          cash_out?: number | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          shift_id?: string | null
+        }
+        Update: {
+          balance?: number | null
+          cash_in?: number | null
+          cash_out?: number | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          shift_id?: string | null
+        }
+        Relationships: []
+      }
+      courts: {
+        Row: {
+          id: string
+          name: string
+          seasonal_price_rules: Json | null
+          status: Database["public"]["Enums"]["court_status"] | null
+          type: Database["public"]["Enums"]["court_type"]
+        }
+        Insert: {
+          id?: string
+          name: string
+          seasonal_price_rules?: Json | null
+          status?: Database["public"]["Enums"]["court_status"] | null
+          type: Database["public"]["Enums"]["court_type"]
+        }
+        Update: {
+          id?: string
+          name?: string
+          seasonal_price_rules?: Json | null
+          status?: Database["public"]["Enums"]["court_status"] | null
+          type?: Database["public"]["Enums"]["court_type"]
+        }
+        Relationships: []
+      }
+      inventory: {
+        Row: {
+          id: string
+          item_name: string
+          last_update: string | null
+          stock: number | null
+          unit_price: number
+        }
+        Insert: {
+          id?: string
+          item_name: string
+          last_update?: string | null
+          stock?: number | null
+          unit_price: number
+        }
+        Update: {
+          id?: string
+          item_name?: string
+          last_update?: string | null
+          stock?: number | null
+          unit_price?: number
+        }
+        Relationships: []
+      }
+      reservations: {
+        Row: {
+          court_id: string | null
+          created_at: string | null
+          end_time: string
+          id: string
+          price: number
+          start_time: string
+          status: Database["public"]["Enums"]["reservation_status"] | null
+          user_id: string | null
+        }
+        Insert: {
+          court_id?: string | null
+          created_at?: string | null
+          end_time: string
+          id?: string
+          price: number
+          start_time: string
+          status?: Database["public"]["Enums"]["reservation_status"] | null
+          user_id?: string | null
+        }
+        Update: {
+          court_id?: string | null
+          created_at?: string | null
+          end_time?: string
+          id?: string
+          price?: number
+          start_time?: string
+          status?: Database["public"]["Enums"]["reservation_status"] | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_court_id_fkey"
+            columns: ["court_id"]
+            isOneToOne: false
+            referencedRelation: "courts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
