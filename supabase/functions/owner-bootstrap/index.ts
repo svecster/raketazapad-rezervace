@@ -372,7 +372,6 @@ Deno.serve(async (req) => {
         );
       }
     }
-    }
 
     return new Response(
       JSON.stringify({ success: false, error: 'Neplatná akce' }),
