@@ -1,6 +1,18 @@
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { Circle, User, LogOut, Calendar, Settings, BarChart3 } from 'lucide-react';
+import { useViewMode } from '@/hooks/useViewMode';
+import { 
+  Circle, 
+  User, 
+  LogOut, 
+  Calendar, 
+  Settings, 
+  BarChart3, 
+  Banknote,
+  Crown,
+  UserCog,
+  ChevronDown
+} from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   DropdownMenu,
@@ -14,9 +26,18 @@ import { Badge } from '@/components/ui/badge';
 
 export const Header = () => {
   const { user, profile, signOut, isStaff, isOwner } = useAuth();
+  const { viewMode, switchViewMode, getNavigationForMode, getViewModeLabel, canSwitchMode } = useViewMode();
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
+
+  // Get icon component by name
+  const getIconComponent = (iconName: string) => {
+    const icons = { Calendar, BarChart3, Settings, Banknote };
+    return icons[iconName as keyof typeof icons];
+  };
+
+  const navigation = getNavigationForMode();
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -31,44 +52,78 @@ export const Header = () => {
 
           {user && (
             <nav className="hidden md:flex items-center space-x-6">
-              <Link
-                to="/rezervace"
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive('/rezervace') ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
-                <Calendar className="h-4 w-4 inline mr-2" />
-                Rezervace
-              </Link>
-
-              {isStaff && (
-                <Link
-                  to="/personal"
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    isActive('/personal') ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                >
-                  <BarChart3 className="h-4 w-4 inline mr-2" />
-                  Personál
-                </Link>
-              )}
-
-              {isOwner && (
-                <Link
-                  to="/sprava"
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    isActive('/sprava') ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                >
-                  <Settings className="h-4 w-4 inline mr-2" />
-                  Správa
-                </Link>
-              )}
+              {navigation.map((item) => {
+                const IconComponent = getIconComponent(item.icon);
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                      isActive(item.path) ? 'text-primary' : 'text-muted-foreground'
+                    }`}
+                  >
+                    {IconComponent && <IconComponent className="h-4 w-4 inline mr-2" />}
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
           )}
         </div>
 
         <div className="flex items-center space-x-4">
+          {/* Role Switcher for Owner */}
+          {canSwitchMode && user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8">
+                  {viewMode === 'owner' && <Crown className="h-3 w-3 mr-2" />}
+                  {viewMode === 'staff' && <UserCog className="h-3 w-3 mr-2" />}
+                  {viewMode === 'player' && <User className="h-3 w-3 mr-2" />}
+                  <span className="hidden sm:inline">{getViewModeLabel(viewMode)}</span>
+                  <span className="sm:hidden">
+                    {viewMode === 'owner' && 'Majitel'}
+                    {viewMode === 'staff' && 'Personál'}
+                    {viewMode === 'player' && 'Hráč'}
+                  </span>
+                  <ChevronDown className="h-3 w-3 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                className="w-48 bg-background/95 backdrop-blur z-50" 
+                align="end"
+                sideOffset={5}
+              >
+                <DropdownMenuLabel>Přepnout režim</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => switchViewMode('owner')}
+                  className={viewMode === 'owner' ? 'bg-accent' : ''}
+                >
+                  <Crown className="mr-2 h-4 w-4" />
+                  <span>Majitel</span>
+                  {viewMode === 'owner' && <Badge className="ml-auto" variant="secondary">Aktivní</Badge>}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => switchViewMode('staff')}
+                  className={viewMode === 'staff' ? 'bg-accent' : ''}
+                >
+                  <UserCog className="mr-2 h-4 w-4" />
+                  <span>Personál</span>
+                  {viewMode === 'staff' && <Badge className="ml-auto" variant="secondary">Aktivní</Badge>}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => switchViewMode('player')}
+                  className={viewMode === 'player' ? 'bg-accent' : ''}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Hráč</span>
+                  {viewMode === 'player' && <Badge className="ml-auto" variant="secondary">Aktivní</Badge>}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -76,7 +131,12 @@ export const Header = () => {
                   <User className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent 
+                className="w-56 bg-background/95 backdrop-blur z-50" 
+                align="end" 
+                forceMount
+                sideOffset={5}
+              >
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">

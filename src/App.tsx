@@ -9,6 +9,7 @@ import { PlayerDashboard } from "./pages/player/PlayerDashboard";
 import { StaffDashboard } from "./pages/staff/StaffDashboard";
 import { OwnerDashboard } from "./pages/owner/OwnerDashboard";
 import { GuestReservation } from "./pages/guest/GuestReservation";
+import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from "./pages/NotFound";
 import { SetupOwner } from "./pages/SetupOwner";
 import { ResetPassword } from "./pages/ResetPassword";
@@ -45,7 +46,23 @@ const App = () => (
             } 
           />
           <Route 
+            path="/rezervace" 
+            element={
+              <RouteGuard requireAuth={true}>
+                <PlayerDashboard />
+              </RouteGuard>
+            } 
+          />
+          <Route 
             path="/admin/obsluha" 
+            element={
+              <RouteGuard requireAuth={true} allowedRoles={['staff', 'owner']}>
+                <StaffDashboard />
+              </RouteGuard>
+            } 
+          />
+          <Route 
+            path="/admin/personal" 
             element={
               <RouteGuard requireAuth={true} allowedRoles={['staff', 'owner']}>
                 <StaffDashboard />
@@ -57,6 +74,14 @@ const App = () => (
             element={
               <RouteGuard requireAuth={true} requiredRole="owner">
                 <OwnerDashboard />
+              </RouteGuard>
+            } 
+          />
+          <Route 
+            path="/admin/pokladna" 
+            element={
+              <RouteGuard requireAuth={true} allowedRoles={['staff', 'owner']}>
+                <CheckoutPage />
               </RouteGuard>
             } 
           />

@@ -297,23 +297,99 @@ export const CheckoutWizard: React.FC<CheckoutWizardProps> = ({
       {/* Step content */}
       <div className="min-h-[600px]">
         {currentStep === 1 && (
-          <CheckoutStep1 
-            checkout={checkout}
-            onUpdate={refreshCheckout}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle>Košík & Účty</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="font-medium mb-3">Položky</h3>
+                    {checkout.items.map((item, index) => (
+                      <div key={index} className="flex justify-between items-center p-3 border rounded">
+                        <div>
+                          <p className="font-medium">{item.name}</p>
+                          <p className="text-sm text-muted-foreground">{item.description}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">{formatCurrency(item.total_price)}</p>
+                          <p className="text-xs text-muted-foreground">{item.quantity}x {formatCurrency(item.unit_price)}</p>
+                        </div>
+                      </div>
+                    ))}
+                    <Button size="sm" className="w-full mt-3">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Přidat položku
+                    </Button>
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-3">Účty</h3>
+                    {checkout.accounts.map((account, index) => (
+                      <div key={index} className="p-3 border rounded">
+                        <div className="flex justify-between items-center">
+                          <p className="font-medium">{account.name}</p>
+                          <Badge variant={account.payment_status === 'paid' ? 'default' : 'secondary'}>
+                            {formatCurrency(account.total_amount)}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {account.assigned_players.length} hráčů
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
         {currentStep === 2 && (
-          <CheckoutStep2 
-            checkout={checkout}
-            onUpdate={refreshCheckout}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle>Platby</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {checkout.accounts.map((account, index) => (
+                  <div key={index} className="p-4 border rounded">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-medium">{account.name}</h4>
+                      <p className="text-lg font-bold">{formatCurrency(account.total_amount)}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline">
+                        Hotově
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        QR platba
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
         {currentStep === 3 && (
-          <CheckoutStep3 
-            checkout={checkout}
-            onUpdate={refreshCheckout}
-            onComplete={handleComplete}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle>Dokončení</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center space-y-4">
+                <CheckCircle className="h-16 w-16 text-green-600 mx-auto" />
+                <h3 className="text-xl font-semibold">Checkout dokončen!</h3>
+                <p className="text-muted-foreground">
+                  Celková částka: {formatCurrency(checkout.total_amount)}
+                </p>
+                <Button onClick={handleComplete}>
+                  <Receipt className="h-4 w-4 mr-2" />
+                  Vytisknout doklad
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
 
