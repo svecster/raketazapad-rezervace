@@ -10,6 +10,7 @@ import { StaffDashboard } from "./pages/staff/StaffDashboard";
 import { OwnerDashboard } from "./pages/owner/OwnerDashboard";
 import { GuestReservation } from "./pages/guest/GuestReservation";
 import NotFound from "./pages/NotFound";
+import { SetupOwner } from "./pages/SetupOwner";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,9 @@ const App = () => (
           {/* Entry page - always show first */}
           <Route path="/auth" element={<EntryPage />} />
           <Route path="/" element={<EntryPage />} />
+          
+          {/* Owner setup */}
+          <Route path="/setup-owner" element={<SetupOwner />} />
           
           {/* Guest reservation */}
           <Route path="/rezervace/host" element={<GuestReservation />} />
