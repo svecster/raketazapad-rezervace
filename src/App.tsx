@@ -15,6 +15,9 @@ import NotFound from "./pages/NotFound";
 import { SetupOwner } from "./pages/SetupOwner";
 import { ResetPassword } from "./pages/ResetPassword";
 
+// New public pages
+import { HomePage } from "./pages/HomePage";
+import { PublicReservationPage } from "./pages/PublicReservationPage";
 import { ServicesPage } from "./pages/ServicesPage";
 import { PricingPage } from "./pages/PricingPage";
 import { ContactPage } from "./pages/ContactPage";
