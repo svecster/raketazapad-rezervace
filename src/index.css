@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tenis Nisa Design System - Fáze 1 */
+/* Tenis Nisa Design System - Enhanced */
 
 @layer base {
   :root {
-    /* Tenis Nisa Brand Colors */
+    /* Tenis Nisa Brand Colors - Enhanced Contrast */
     --background: 0 0% 100%; /* #FFFFFF */
     --foreground: 220 33% 14%; /* #0F172A */
     --card: 0 0% 100%;
@@ -20,11 +20,11 @@
     
     /* Accent: #21B6A8 */
     --secondary: 174 69% 42%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary-foreground: 181 61% 8%; /* Dark text on accent */
     
     /* Accent color */
     --accent: 174 69% 42%;
-    --accent-foreground: 0 0% 100%;
+    --accent-foreground: 181 61% 8%;
     
     /* Text colors */
     --text-heading: 220 33% 14%; /* #0F172A */
@@ -36,7 +36,7 @@
     /* Borders */
     --border: 220 13% 91%; /* #E5E7EB */
     --input: 220 13% 91%;
-    --ring: 181 61% 15%;
+    --ring: 174 69% 42%; /* Focus ring uses accent */
     
     /* Status and utility colors */
     --muted: 210 17% 98%;
@@ -46,6 +46,16 @@
     
     --radius: 0.75rem; /* 12px default radius */
     
+    /* Tenis Nisa specific tokens */
+    --tn-primary: 181 61% 15%; /* #0F3D3E */
+    --tn-accent: 174 69% 42%; /* #21B6A8 */
+    --tn-bg: 0 0% 100%; /* #FFFFFF */
+    --tn-bg-subtle: 210 17% 98%; /* #F7FAFC */
+    --tn-text: 220 33% 14%; /* #0F172A */
+    --tn-text-muted: 216 16% 25%; /* #334155 */
+    --tn-border: 220 13% 91%; /* #E5E7EB */
+    --tn-focus: 174 69% 42%; /* #21B6A8 */
+    
     /* Sidebar colors */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 33% 14%;
@@ -54,7 +64,7 @@
     --sidebar-accent: 210 17% 98%;
     --sidebar-accent-foreground: 220 33% 14%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 181 61% 15%;
+    --sidebar-ring: 174 69% 42%;
   }
 
   .dark {
@@ -81,6 +91,16 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     
+    /* Tenis Nisa dark mode tokens */
+    --tn-primary: 174 69% 42%; /* Lighter in dark mode */
+    --tn-accent: 174 69% 52%; /* Even lighter accent */
+    --tn-bg: 181 61% 8%; /* Dark background */
+    --tn-bg-subtle: 181 61% 12%; /* Subtle dark background */
+    --tn-text: 0 0% 100%; /* White text */
+    --tn-text-muted: 210 17% 85%; /* Light muted text */
+    --tn-border: 181 61% 15%; /* Dark borders */
+    --tn-focus: 174 69% 52%; /* Bright focus */
+    
     --sidebar-background: 181 61% 8%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 174 69% 42%;
@@ -92,13 +112,28 @@
   }
 }
 
+/* Global base styles for improved contrast and accessibility */
+html { 
+  box-sizing: border-box; 
+}
+
+*, *::before, *::after { 
+  box-sizing: inherit; 
+}
+
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans;
+    background: hsl(var(--tn-bg));
+    color: hsl(var(--tn-text));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    line-height: 1.5;
   }
   
   /* Typography hierarchy */
@@ -112,6 +147,32 @@
     @apply leading-relaxed;
   }
   
+  /* Fix subpixel blur for sticky/transform elements */
+  img, canvas, svg, video { 
+    image-rendering: auto; 
+  }
+  
+  [data-sticky] { 
+    transform: translateZ(0); 
+    will-change: transform; 
+  }
+  
+  /* Better defaults for links and focus */
+  a { 
+    color: hsl(var(--tn-primary)); 
+    text-decoration: none; 
+  }
+  
+  a:hover { 
+    text-decoration: underline; 
+  }
+  
+  :focus-visible {
+    outline: 2px solid hsl(var(--tn-focus));
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+  
   /* Czech number formatting */
   .currency {
     font-variant-numeric: tabular-nums;
@@ -119,7 +180,7 @@
 }
 
 @layer components {
-  /* Tenis Nisa specific components */
+  /* Tenis Nisa specific components with enhanced contrast */
   .section-padding {
     @apply py-16 px-4 sm:px-6 lg:px-8;
   }
@@ -133,14 +194,35 @@
   }
   
   .service-card {
-    @apply bg-card rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow duration-200;
+    @apply bg-white rounded-2xl p-6 shadow-card border border-tn-border hover:shadow-lg transition-shadow duration-200;
   }
   
   .cta-button {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-xl font-medium transition-colors duration-200;
+    @apply bg-tn-primary text-white hover:brightness-110 px-6 py-3 rounded-xl font-semibold transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-tn-focus focus-visible:ring-offset-2;
   }
   
   .cta-button-secondary {
-    @apply border border-primary text-primary hover:bg-primary hover:text-primary-foreground px-6 py-3 rounded-xl font-medium transition-colors duration-200;
+    @apply border border-tn-primary text-tn-primary bg-white hover:bg-tn-subtle px-6 py-3 rounded-xl font-semibold transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-tn-focus focus-visible:ring-offset-2;
+  }
+  
+  /* Reservation grid styles for improved contrast */
+  .slot-cell {
+    @apply h-10 min-w-[56px] text-center align-middle border border-tn-border text-[13px] text-tn-text bg-white hover:bg-tn-subtle transition-colors duration-150 cursor-pointer;
+  }
+  
+  .slot-cell[data-busy="true"] {
+    @apply bg-[#F1F5F9] text-[#64748B] cursor-not-allowed;
+  }
+  
+  .slot-cell[data-selected="true"] {
+    @apply bg-tn-primary text-white font-semibold hover:bg-tn-primary;
+  }
+  
+  .slot-cell:hover:not([data-busy="true"]):not([data-selected="true"]) {
+    @apply ring-2 ring-tn-accent/30;
+  }
+  
+  .slot-cell:disabled {
+    @apply opacity-50 cursor-not-allowed;
   }
 }

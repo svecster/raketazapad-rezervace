@@ -55,6 +55,17 @@ export default {
         'text-heading': 'hsl(var(--text-heading))',
         'text-body': 'hsl(var(--text-body))',
         'section-bg': 'hsl(var(--section-bg))',
+        // Tenis Nisa design system
+        tn: {
+          primary: 'hsl(var(--tn-primary))',
+          accent: 'hsl(var(--tn-accent))',
+          bg: 'hsl(var(--tn-bg))',
+          subtle: 'hsl(var(--tn-bg-subtle))',
+          text: 'hsl(var(--tn-text))',
+          muted: 'hsl(var(--tn-text-muted))',
+          border: 'hsl(var(--tn-border))',
+          focus: 'hsl(var(--tn-focus))',
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -70,6 +81,11 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "12px",
+        "2xl": "16px",
+      },
+      boxShadow: {
+        card: "0 8px 24px rgba(2, 6, 23, 0.06)",
       },
       keyframes: {
         "accordion-down": {
