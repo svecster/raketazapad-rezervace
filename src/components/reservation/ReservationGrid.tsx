@@ -155,7 +155,7 @@ export const ReservationGrid = ({ courts, startDate, selectedBlocks, onSlotClick
             <div className="overflow-x-auto">
               <div className="min-w-[1200px]">
                 {/* Time header */}
-                <div className="grid grid-cols-[160px_repeat(30,1fr)] border-b border-tn-border bg-tn-subtle">
+                <div className="grid border-b border-tn-border bg-tn-subtle" style={{ gridTemplateColumns: `160px repeat(${timeSlots.length}, 1fr)` }}>
                   <div className="p-3 text-sm font-semibold border-r border-tn-border text-tn-text">Kurt</div>
                   {timeSlots.map((time, index) => (
                     <div key={index} className="p-2 text-xs text-center font-medium border-r border-tn-border text-tn-text last:border-r-0">
@@ -167,7 +167,7 @@ export const ReservationGrid = ({ courts, startDate, selectedBlocks, onSlotClick
                 {/* Court rows */}
                 {sortedCourts.filter(court => court.status === 'available').map((court) => (
                   <div key={court.id} className="border-b border-tn-border last:border-b-0">
-                    <div className="grid grid-cols-[160px_repeat(30,1fr)]">
+                    <div className="grid" style={{ gridTemplateColumns: `160px repeat(${timeSlots.length}, 1fr)` }}>
                       {/* Court name */}
                       <div className="p-3 bg-tn-subtle border-r border-tn-border">
                         <div className="font-semibold text-sm text-tn-text">{court.name}</div>
@@ -189,13 +189,12 @@ export const ReservationGrid = ({ courts, startDate, selectedBlocks, onSlotClick
                           <button
                             key={timeIndex}
                             className={cn(
-                              "slot-cell relative min-h-[60px] flex flex-col items-center justify-center transition-all duration-150",
-                              slot.isBusy && "bg-[#F1F5F9] text-[#64748B] cursor-not-allowed border-tn-border",
-                              !slot.isBusy && !isSelected && "bg-white text-tn-text hover:bg-tn-subtle hover:ring-2 hover:ring-tn-accent/30 cursor-pointer border-tn-border",
-                              isSelected && "bg-tn-primary text-white font-semibold border-tn-primary",
+                              "relative border-r border-tn-border last:border-r-0 min-h-[60px] flex flex-col items-center justify-center transition-all duration-150 text-xs",
+                              slot.isBusy && "bg-[#F1F5F9] text-[#64748B] cursor-not-allowed",
+                              !slot.isBusy && !isSelected && "bg-white text-tn-text hover:bg-tn-subtle hover:ring-2 hover:ring-tn-accent/30 cursor-pointer",
+                              isSelected && "bg-tn-primary text-white font-semibold",
                               isBlockStart && "rounded-l-lg",
-                              isBlockEnd && "rounded-r-lg",
-                              isBlockMiddle && "border-l-0 border-r-0"
+                              isBlockEnd && "rounded-r-lg"
                             )}
                             onClick={() => !slot.isBusy && onSlotClick(slot)}
                             disabled={slot.isBusy}
@@ -203,18 +202,18 @@ export const ReservationGrid = ({ courts, startDate, selectedBlocks, onSlotClick
                             data-selected={isSelected ? "true" : "false"}
                           >
                             {slot.isBusy ? (
-                              <span className="text-center text-xs font-medium">Obsazeno</span>
+                              <span className="text-center font-medium">Obsazeno</span>
                             ) : isSelected && selectedBlock ? (
-                              <div className="text-center">
+                              <div className="text-center text-white">
                                 {isBlockStart && (
                                   <>
-                                    <div className="font-semibold text-xs">{selectedBlock.start}–{selectedBlock.end}</div>
-                                    <div className="text-xs mt-1">{Math.round(selectedBlock.totalPrice)} Kč</div>
+                                    <div className="font-bold text-xs leading-tight">{selectedBlock.start}–{selectedBlock.end}</div>
+                                    <div className="text-xs mt-1 opacity-90">{Math.round(selectedBlock.totalPrice)} Kč</div>
                                   </>
                                 )}
                               </div>
                             ) : (
-                              <span className="font-semibold text-xs">{formatSlotPrice(slot.price)}</span>
+                              <span className="font-semibold">{formatSlotPrice(slot.price)}</span>
                             )}
                           </button>
                         );
