@@ -15,6 +15,10 @@ import NotFound from "./pages/NotFound";
 import { SetupOwner } from "./pages/SetupOwner";
 import { ResetPassword } from "./pages/ResetPassword";
 
+import { ServicesPage } from "./pages/ServicesPage";
+import { PricingPage } from "./pages/PricingPage";
+import { ContactPage } from "./pages/ContactPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -24,9 +28,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Entry page - always show first */}
+          {/* Public website */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/sluzby" element={<ServicesPage />} />
+          <Route path="/cenik" element={<PricingPage />} />
+          <Route path="/kontakt" element={<ContactPage />} />
+          <Route path="/rezervace" element={<PublicReservationPage />} />
+          
+          {/* Auth and admin */}
           <Route path="/auth" element={<EntryPage />} />
-          <Route path="/" element={<EntryPage />} />
           
           {/* Owner setup */}
           <Route path="/setup-owner" element={<SetupOwner />} />
@@ -50,7 +60,7 @@ const App = () => (
             } 
           />
           <Route 
-            path="/rezervace" 
+            path="/app/rezervace" 
             element={
               <RouteGuard requireAuth={true}>
                 <PlayerDashboard />

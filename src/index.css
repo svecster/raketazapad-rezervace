@@ -2,91 +2,93 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-Tennis club green theme inspired by tenisnisa.cz
-*/
+/* Tenis Nisa Design System - Fáze 1 */
 
 @layer base {
   :root {
-    /* Tennis green color scheme inspired by tenisnisa.cz */
-    --background: 138 8% 96%; /* #F5F7F4 */
-    --foreground: 0 0% 7%; /* #111 */
-    --card: 138 8% 96%;
-    --card-foreground: 0 0% 7%;
-    --popover: 138 8% 96%;
-    --popover-foreground: 0 0% 7%;
-    --primary: 122 60% 11%; /* #1B5E20 */
-    --primary-foreground: 138 8% 96%;
-    --secondary: 122 43% 31%; /* #43A047 */
-    --secondary-foreground: 138 8% 96%;
-    --muted: 138 8% 90%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 122 43% 31%;
-    --accent-foreground: 138 8% 96%;
+    /* Tenis Nisa Brand Colors */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 220 33% 14%; /* #0F172A */
+    --card: 0 0% 100%;
+    --card-foreground: 220 33% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 33% 14%;
+    
+    /* Primary: #0F3D3E (tmavě zelenomodrá) */
+    --primary: 181 61% 15%; 
+    --primary-foreground: 0 0% 100%;
+    
+    /* Accent: #21B6A8 */
+    --secondary: 174 69% 42%;
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Accent color */
+    --accent: 174 69% 42%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Text colors */
+    --text-heading: 220 33% 14%; /* #0F172A */
+    --text-body: 216 16% 25%; /* #334155 */
+    
+    /* Background variations */
+    --section-bg: 210 17% 98%; /* #F7FAFC */
+    
+    /* Borders */
+    --border: 220 13% 91%; /* #E5E7EB */
+    --input: 220 13% 91%;
+    --ring: 181 61% 15%;
+    
+    /* Status and utility colors */
+    --muted: 210 17% 98%;
+    --muted-foreground: 216 16% 25%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 138 8% 85%;
-    --input: 138 8% 85%;
-    --ring: 122 60% 11%;
-    --radius: 0.5rem;
     
-    /* Tennis club specific colors */
-    --tennis-primary: 122 60% 11%; /* Deep green #1B5E20 */
-    --tennis-secondary: 122 43% 31%; /* Grass green #43A047 */
-    --tennis-clay: 13 36% 53%; /* Clay court #B65C4E */
-    --tennis-warning: 45 100% 66%; /* Sun yellow #FFD54F */
-    --tennis-success: 122 43% 31%;
-    --tennis-indoor: 122 60% 11%;
-    --tennis-outdoor: 122 43% 31%;
+    --radius: 0.75rem; /* 12px default radius */
     
-    /* Semantic tokens */
-    --court-indoor: hsl(var(--tennis-indoor));
-    --court-outdoor: hsl(var(--tennis-outdoor));
-    --price-color: hsl(var(--tennis-primary));
-    --success-color: hsl(var(--tennis-success));
-    --warning-color: hsl(var(--tennis-warning));
-    --clay-color: hsl(var(--tennis-clay));
-    
-    --sidebar-background: 138 8% 96%;
-    --sidebar-foreground: 0 0% 7%;
-    --sidebar-primary: 122 60% 11%;
-    --sidebar-primary-foreground: 138 8% 96%;
-    --sidebar-accent: 138 8% 90%;
-    --sidebar-accent-foreground: 0 0% 7%;
-    --sidebar-border: 138 8% 85%;
-    --sidebar-ring: 122 60% 11%;
+    /* Sidebar colors */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 33% 14%;
+    --sidebar-primary: 181 61% 15%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 17% 98%;
+    --sidebar-accent-foreground: 220 33% 14%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 181 61% 15%;
   }
 
   .dark {
-    --background: 122 60% 4%;
-    --foreground: 138 8% 96%;
-    --card: 122 60% 4%;
-    --card-foreground: 138 8% 96%;
-    --popover: 122 60% 4%;
-    --popover-foreground: 138 8% 96%;
-    --primary: 122 43% 31%;
-    --primary-foreground: 122 60% 4%;
-    --secondary: 122 60% 11%;
-    --secondary-foreground: 138 8% 96%;
-    --muted: 122 60% 8%;
-    --muted-foreground: 138 8% 65%;
-    --accent: 122 60% 8%;
-    --accent-foreground: 138 8% 96%;
+    --background: 181 61% 8%;
+    --foreground: 0 0% 100%;
+    --card: 181 61% 8%;
+    --card-foreground: 0 0% 100%;
+    --popover: 181 61% 8%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 174 69% 42%;
+    --primary-foreground: 181 61% 8%;
+    --secondary: 181 61% 15%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 181 61% 12%;
+    --accent-foreground: 0 0% 100%;
+    --text-heading: 0 0% 100%;
+    --text-body: 210 17% 85%;
+    --section-bg: 181 61% 6%;
+    --border: 181 61% 12%;
+    --input: 181 61% 12%;
+    --ring: 174 69% 42%;
+    --muted: 181 61% 12%;
+    --muted-foreground: 210 17% 85%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 122 60% 8%;
-    --input: 122 60% 8%;
-    --ring: 122 43% 31%;
     
-    --sidebar-background: 122 60% 4%;
-    --sidebar-foreground: 138 8% 96%;
-    --sidebar-primary: 122 43% 31%;
-    --sidebar-primary-foreground: 122 60% 4%;
-    --sidebar-accent: 122 60% 8%;
-    --sidebar-accent-foreground: 138 8% 96%;
-    --sidebar-border: 122 60% 8%;
-    --sidebar-ring: 122 43% 31%;
+    --sidebar-background: 181 61% 8%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 174 69% 42%;
+    --sidebar-primary-foreground: 181 61% 8%;
+    --sidebar-accent: 181 61% 12%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 181 61% 12%;
+    --sidebar-ring: 174 69% 42%;
   }
 }
 
@@ -96,56 +98,49 @@ Tennis club green theme inspired by tenisnisa.cz
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  
+  /* Typography hierarchy */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+    color: hsl(var(--text-heading));
+  }
+  
+  p, span, div {
+    color: hsl(var(--text-body));
+    @apply leading-relaxed;
   }
   
   /* Czech number formatting */
   .currency {
     font-variant-numeric: tabular-nums;
   }
-  
-  /* Tennis court specific styles */
-  .court-indoor {
-    @apply bg-primary/10 border-primary text-primary;
-  }
-  
-  .court-outdoor {
-    @apply bg-secondary/10 border-secondary text-secondary;
-  }
-  
-  .court-card {
-    @apply rounded-lg border bg-card p-4 shadow-sm transition-shadow hover:shadow-md;
-  }
-  
-  /* Status indicators */
-  .status-available {
-    @apply bg-green-50 text-green-700 border-green-200;
-  }
-  
-  .status-booked {
-    @apply bg-yellow-50 text-yellow-700 border-yellow-200;
-  }
-  
-  .status-paid {
-    @apply bg-blue-50 text-blue-700 border-blue-200;
-  }
-  
-  .status-cancelled {
-    @apply bg-red-50 text-red-700 border-red-200;
-  }
 }
 
 @layer components {
-  /* Czech-specific button variants */
-  .btn-tennis {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors;
+  /* Tenis Nisa specific components */
+  .section-padding {
+    @apply py-16 px-4 sm:px-6 lg:px-8;
   }
   
-  .btn-court-indoor {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  .container-max {
+    @apply max-w-7xl mx-auto;
   }
   
-  .btn-court-outdoor {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
+  .hero-section {
+    @apply bg-background relative overflow-hidden;
+  }
+  
+  .service-card {
+    @apply bg-card rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .cta-button {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-xl font-medium transition-colors duration-200;
+  }
+  
+  .cta-button-secondary {
+    @apply border border-primary text-primary hover:bg-primary hover:text-primary-foreground px-6 py-3 rounded-xl font-medium transition-colors duration-200;
   }
 }
