@@ -886,7 +886,7 @@ export type Database = {
           id: number
           note: string | null
           payment_method: string
-          reservation_id: string | null
+          reservation_id: number | null
           status: string
           total_amount: number
           user_id: string | null
@@ -896,7 +896,7 @@ export type Database = {
           id?: number
           note?: string | null
           payment_method: string
-          reservation_id?: string | null
+          reservation_id?: number | null
           status?: string
           total_amount: number
           user_id?: string | null
@@ -906,12 +906,20 @@ export type Database = {
           id?: number
           note?: string | null
           payment_method?: string
-          reservation_id?: string | null
+          reservation_id?: number | null
           status?: string
           total_amount?: number
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sales_reservation_fk"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shifts: {
         Row: {
