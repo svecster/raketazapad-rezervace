@@ -1062,7 +1062,18 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_users_extended: {
+        Row: {
+          app_role: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          phone: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       app_role: {
@@ -1074,6 +1085,10 @@ export type Database = {
         Returns: undefined
       }
       generate_guest_token: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_current_user_app_role: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
