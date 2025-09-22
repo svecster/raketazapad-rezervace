@@ -507,6 +507,66 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_counts: {
+        Row: {
+          counted_qty: number
+          id: number
+          note: string | null
+          product_id: number | null
+          session_id: number | null
+        }
+        Insert: {
+          counted_qty: number
+          id?: number
+          note?: string | null
+          product_id?: number | null
+          session_id?: number | null
+        }
+        Update: {
+          counted_qty?: number
+          id?: number
+          note?: string | null
+          product_id?: number | null
+          session_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_counts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_counts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_sessions: {
+        Row: {
+          closed_at: string | null
+          id: number
+          started_at: string | null
+          started_by: string | null
+        }
+        Insert: {
+          closed_at?: string | null
+          id?: number
+          started_at?: string | null
+          started_by?: string | null
+        }
+        Update: {
+          closed_at?: string | null
+          id?: number
+          started_at?: string | null
+          started_by?: string | null
+        }
+        Relationships: []
+      }
       payment_settings: {
         Row: {
           cash_enabled: boolean
@@ -555,6 +615,39 @@ export type Database = {
         }
         Relationships: []
       }
+      pos_settings: {
+        Row: {
+          alert_email: string | null
+          created_at: string | null
+          id: string
+          qr_bank_account: string | null
+          qr_bank_code: string | null
+          qr_default_message: string | null
+          qr_recipient_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          alert_email?: string | null
+          created_at?: string | null
+          id?: string
+          qr_bank_account?: string | null
+          qr_bank_code?: string | null
+          qr_default_message?: string | null
+          qr_recipient_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          alert_email?: string | null
+          created_at?: string | null
+          id?: string
+          qr_bank_account?: string | null
+          qr_bank_code?: string | null
+          qr_default_message?: string | null
+          qr_recipient_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       price_rules: {
         Row: {
           court_type: string
@@ -587,6 +680,90 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      products: {
+        Row: {
+          category: string
+          cost_price: number | null
+          created_at: string | null
+          id: number
+          is_active: boolean
+          min_stock: number | null
+          name: string
+          sell_price: number
+          sku: string | null
+          stock_qty: number
+          track_stock: boolean
+          unit: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          cost_price?: number | null
+          created_at?: string | null
+          id?: number
+          is_active?: boolean
+          min_stock?: number | null
+          name: string
+          sell_price: number
+          sku?: string | null
+          stock_qty?: number
+          track_stock?: boolean
+          unit?: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          cost_price?: number | null
+          created_at?: string | null
+          id?: number
+          is_active?: boolean
+          min_stock?: number | null
+          name?: string
+          sell_price?: number
+          sku?: string | null
+          stock_qty?: number
+          track_stock?: boolean
+          unit?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          component_id: number | null
+          id: number
+          product_id: number | null
+          qty: number
+        }
+        Insert: {
+          component_id?: number | null
+          id?: number
+          product_id?: number | null
+          qty: number
+        }
+        Update: {
+          component_id?: number | null
+          id?: number
+          product_id?: number | null
+          qty?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipes_component_id_fkey"
+            columns: ["component_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recipes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reservations: {
         Row: {
@@ -658,6 +835,84 @@ export type Database = {
           },
         ]
       }
+      sale_items: {
+        Row: {
+          discount: number | null
+          id: number
+          product_id: number | null
+          qty: number
+          sale_id: number | null
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          discount?: number | null
+          id?: number
+          product_id?: number | null
+          qty: number
+          sale_id?: number | null
+          total: number
+          unit_price: number
+        }
+        Update: {
+          discount?: number | null
+          id?: number
+          product_id?: number | null
+          qty?: number
+          sale_id?: number | null
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          created_at: string | null
+          id: number
+          note: string | null
+          payment_method: string
+          reservation_id: string | null
+          status: string
+          total_amount: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          note?: string | null
+          payment_method: string
+          reservation_id?: string | null
+          status?: string
+          total_amount: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          note?: string | null
+          payment_method?: string
+          reservation_id?: string | null
+          status?: string
+          total_amount?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       shifts: {
         Row: {
           closed_at: string | null
@@ -695,6 +950,47 @@ export type Database = {
             columns: ["staff_user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_movements: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          delta: number
+          id: number
+          product_id: number | null
+          reason: string
+          ref_id: number | null
+          ref_table: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          delta: number
+          id?: number
+          product_id?: number | null
+          reason: string
+          ref_id?: number | null
+          ref_table?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          delta?: number
+          id?: number
+          product_id?: number | null
+          reason?: string
+          ref_id?: number | null
+          ref_table?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
