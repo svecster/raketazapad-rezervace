@@ -9,6 +9,7 @@ import { PlayerDashboard } from "./pages/player/PlayerDashboard";
 import { StaffDashboard } from "./pages/staff/StaffDashboard";
 import { OwnerDashboard } from "./pages/owner/OwnerDashboard";
 import { GuestReservation } from "./pages/guest/GuestReservation";
+import { ReservantoReservation } from "./pages/ReservantoReservation";
 import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from "./pages/NotFound";
 import { SetupOwner } from "./pages/SetupOwner";
@@ -35,6 +36,9 @@ const App = () => (
           
           {/* Guest reservation */}
           <Route path="/rezervace/host" element={<GuestReservation />} />
+          
+          {/* Reservanto-style reservation */}
+          <Route path="/rezervace/novy" element={<ReservantoReservation />} />
           
           {/* Role-based dashboards */}
           <Route 

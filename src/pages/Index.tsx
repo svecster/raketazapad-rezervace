@@ -23,9 +23,14 @@ const Index = () => {
             <p className="text-sm text-muted-foreground mb-4">
               2 halové a 4 venkovní kurty k dispozici
             </p>
-            <Button asChild className="w-full btn-tennis">
-              <Link to="/rezervace">Rezervovat kurt</Link>
-            </Button>
+            <div className="space-y-2">
+              <Button asChild className="w-full btn-tennis">
+                <Link to="/rezervace/novy">Rezervovat kurt</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="w-full">
+                <Link to="/rezervace/host">Rezervace bez registrace</Link>
+              </Button>
+            </div>
           </div>
           
           <div className="p-6 rounded-lg border bg-card">
