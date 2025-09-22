@@ -25,14 +25,13 @@ export function QRPaymentModal({ amount, onClose, onComplete }: QRPaymentModalPr
 
   const generateQRCode = async () => {
     try {
-      // Generate actual QR code using the payment service
       const result = await qrPaymentService.generateBarOrderQR(
-        `POS-${Date.now()}`, // Generate unique order ID
+        `POS-${Date.now()}`, 
         amount
       );
       
-      setQrCodeDataUrl(result.qrCode);
       setPaymentString(result.paymentString);
+      setQrCodeDataUrl(result.qrCode);
       setLoading(false);
     } catch (error) {
       console.error('Error generating QR code:', error);
