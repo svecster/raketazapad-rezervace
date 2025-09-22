@@ -16,6 +16,7 @@ interface UserProfile {
   app_role: string;
   created_at: string;
   updated_at: string;
+  email?: string; // Added for display
 }
 
 export default function Users() {
@@ -45,7 +46,21 @@ export default function Users() {
           variant: "destructive",
         });
       } else {
-        setUsers(data || []);
+        // Fetch emails for each user using the safe function
+        const usersWithEmails = await Promise.all(
+          (data || []).map(async (user) => {
+            try {
+              const { data: emailData } = await supabase.rpc('get_user_email', { 
+                user_uuid: user.user_id 
+              });
+              return { ...user, email: emailData || 'Není k dispozici' };
+            } catch (error) {
+              console.error('Error fetching email for user:', user.user_id, error);
+              return { ...user, email: 'Není k dispozici' };
+            }
+          })
+        );
+        setUsers(usersWithEmails);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -116,6 +131,7 @@ export default function Users() {
   const filteredUsers = users.filter(user => {
     const matchesSearch = searchTerm === "" || 
       user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.user_id.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesRole = roleFilter === "all" || user.app_role === roleFilter;
@@ -200,7 +216,8 @@ export default function Users() {
                       <div className="flex items-center space-x-3">
                         <div>
                           <h3 className="font-semibold">{user.full_name || 'Bez jména'}</h3>
-                          <p className="text-sm text-muted-foreground">{user.user_id}</p>
+                          <p className="text-sm text-muted-foreground">{user.email || 'Email nedostupný'}</p>
+                          <p className="text-xs text-muted-foreground">{user.user_id}</p>
                           {user.phone && (
                             <p className="text-sm text-muted-foreground">{user.phone}</p>
                           )}
