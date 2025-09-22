@@ -97,6 +97,42 @@ export type Database = {
           },
         ]
       }
+      bookings: {
+        Row: {
+          begins_at: string
+          court_id: number
+          created_at: string | null
+          ends_at: string
+          id: number
+          notes: string | null
+          price: number | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          begins_at: string
+          court_id: number
+          created_at?: string | null
+          ends_at: string
+          id?: number
+          notes?: string | null
+          price?: number | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          begins_at?: string
+          court_id?: number
+          created_at?: string | null
+          ends_at?: string
+          id?: number
+          notes?: string | null
+          price?: number | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       cash_ledger: {
         Row: {
           amount: number
@@ -630,6 +666,33 @@ export type Database = {
           },
         ]
       }
+      user_profiles: {
+        Row: {
+          app_role: string
+          created_at: string | null
+          full_name: string | null
+          phone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          app_role?: string
+          created_at?: string | null
+          full_name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          app_role?: string
+          created_at?: string | null
+          full_name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string | null
@@ -665,6 +728,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      app_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       calculate_checkout_totals: {
         Args: { checkout_uuid: string }
         Returns: undefined
