@@ -1062,18 +1062,7 @@ export type Database = {
       }
     }
     Views: {
-      v_users_extended: {
-        Row: {
-          app_role: string | null
-          created_at: string | null
-          email: string | null
-          full_name: string | null
-          phone: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       app_role: {
