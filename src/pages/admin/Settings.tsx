@@ -1,5 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings as SettingsIcon, Bell, Shield, Palette } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Settings as SettingsIcon, Bell, Shield, Palette, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Settings() {
   return (
@@ -35,6 +37,32 @@ export default function Settings() {
           </Card>
 
           <div className="grid md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center space-x-2">
+                  <Users className="h-5 w-5 text-primary" />
+                  <CardTitle>Uživatelé & role</CardTitle>
+                </div>
+                <CardDescription>
+                  Správa uživatelských účtů a přístupových oprávnění
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Spravujte uživatelské role a oprávnění. Můžete měnit role uživatelů, 
+                    sledovat jejich aktivitu a řídit přístup k různým částem systému.
+                  </p>
+                  <Button asChild className="w-full">
+                    <Link to="/uzivatele" className="flex items-center justify-center">
+                      <Users className="mr-2 h-4 w-4" />
+                      Správa uživatelů
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
             <Card>
               <CardHeader>
                 <div className="flex items-center space-x-2">

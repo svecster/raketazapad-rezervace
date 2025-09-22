@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Phone, User, LogOut, Settings, Users, Calendar, CreditCard } from 'lucide-react';
+import { Menu, X, Phone, User, LogOut, Settings, Users, Calendar, CreditCard, ShoppingCart, Package, BarChart3, FileText } from 'lucide-react';
 import { useSession, hasRole } from '@/auth/AuthProvider';
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ import tenisNisaLogo from '@/assets/tenis-nisa-logo.png';
 export const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { session, loading } = useSession();
+  const { session, loading, appRole } = useSession();
 
   const navItems = [
     { href: '/', label: 'Domů' },
@@ -28,8 +28,9 @@ export const Navigation = () => {
 
   const isActive = (href: string) => location.pathname === href;
   
-  const isStaff = hasRole(session, ["staff", "coach", "admin", "owner"]);
-  const isAdmin = hasRole(session, ["admin", "owner"]);
+  const isStaff = hasRole(session, ["staff", "coach", "admin", "owner"], appRole);
+  const isAdmin = hasRole(session, ["admin", "owner"], appRole);
+  const isOwner = hasRole(session, ["owner"], appRole);
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
@@ -71,6 +72,57 @@ export const Navigation = () => {
             >
               Správa
             </Link>
+          )}
+          
+          {/* Owner/Admin specific links */}
+          {isAdmin && (
+            <>
+              <Link
+                to="/pokladna"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/pokladna') 
+                    ? 'text-primary' 
+                    : 'text-foreground/80'
+                }`}
+              >
+                Pokladna
+              </Link>
+              <Link
+                to="/sklad"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/sklad') 
+                    ? 'text-primary' 
+                    : 'text-foreground/80'
+                }`}
+              >
+                Sklad
+              </Link>
+            </>
+          )}
+          
+          {isOwner && (
+            <>
+              <Link
+                to="/inventury"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/inventury') 
+                    ? 'text-primary' 
+                    : 'text-foreground/80'
+                }`}
+              >
+                Inventury
+              </Link>
+              <Link
+                to="/reporty"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/reporty') 
+                    ? 'text-primary' 
+                    : 'text-foreground/80'
+                }`}
+              >
+                Reporty
+              </Link>
+            </>
           )}
         </div>
 
@@ -133,6 +185,18 @@ export const Navigation = () => {
                     {isAdmin && (
                       <>
                         <DropdownMenuItem asChild>
+                          <Link to="/pokladna" className="flex items-center">
+                            <ShoppingCart className="mr-2 h-4 w-4" />
+                            Pokladna
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/sklad" className="flex items-center">
+                            <Package className="mr-2 h-4 w-4" />
+                            Sklad
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
                           <Link to="/nastaveni" className="flex items-center">
                             <Settings className="mr-2 h-4 w-4" />
                             Nastavení
@@ -142,6 +206,22 @@ export const Navigation = () => {
                           <Link to="/uzivatele" className="flex items-center">
                             <Users className="mr-2 h-4 w-4" />
                             Uživatelé
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    {isOwner && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link to="/inventury" className="flex items-center">
+                            <BarChart3 className="mr-2 h-4 w-4" />
+                            Inventury
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/reporty" className="flex items-center">
+                            <FileText className="mr-2 h-4 w-4" />
+                            Reporty
                           </Link>
                         </DropdownMenuItem>
                       </>
@@ -214,6 +294,28 @@ export const Navigation = () => {
             {isAdmin && (
               <>
                 <Link
+                  to="/pokladna"
+                  className={`block text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/pokladna') 
+                      ? 'text-primary' 
+                      : 'text-foreground/80'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Pokladna
+                </Link>
+                <Link
+                  to="/sklad"
+                  className={`block text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/sklad') 
+                      ? 'text-primary' 
+                      : 'text-foreground/80'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sklad
+                </Link>
+                <Link
                   to="/nastaveni"
                   className={`block text-sm font-medium transition-colors hover:text-primary ${
                     isActive('/nastaveni') 
@@ -234,6 +336,32 @@ export const Navigation = () => {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Uživatelé
+                </Link>
+              </>
+            )}
+            {isOwner && (
+              <>
+                <Link
+                  to="/inventury"
+                  className={`block text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/inventury') 
+                      ? 'text-primary' 
+                      : 'text-foreground/80'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Inventury
+                </Link>
+                <Link
+                  to="/reporty"
+                  className={`block text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/reporty') 
+                      ? 'text-primary' 
+                      : 'text-foreground/80'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Reporty
                 </Link>
               </>
             )}
