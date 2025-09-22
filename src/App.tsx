@@ -23,7 +23,8 @@ import Users from "./pages/admin/Users";
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
 
-// Legacy pages (keeping for compatibility)
+// Legacy pages (keeping for compatibility) 
+import { Navigate } from "react-router-dom";
 import { EntryPage } from "./components/auth/EntryPage";
 import { RouteGuard } from "./components/auth/RouteGuard";
 import { PlayerDashboard } from "./pages/player/PlayerDashboard";
@@ -57,7 +58,9 @@ const App = () => (
           <Route path="/sluzby" element={<ServicesPage />} />
           <Route path="/cenik" element={<PricingPage />} />
           <Route path="/kontakt" element={<ContactPage />} />
-          <Route path="/rezervace" element={<PublicReservationPage />} />
+          <Route path="/rezervace" element={<Navigate to="/rezervace/novy" replace />} />
+          <Route path="/rezervace/novy" element={<ReservantoReservation />} />
+          <Route path="/rezervace/verejne" element={<PublicReservationPage />} />
           
           {/* Auth pages */}
           <Route path="/login" element={<Login />} />
@@ -95,8 +98,7 @@ const App = () => (
           {/* Guest reservation */}
           <Route path="/rezervace/host" element={<GuestReservation />} />
           
-          {/* Reservanto-style reservation */}
-          <Route path="/rezervace/novy" element={<ReservantoReservation />} />
+          {/* Reservanto-style reservation (duplicate removed) */}
           
           {/* Role-based dashboards */}
           <Route 

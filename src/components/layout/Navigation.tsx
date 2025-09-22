@@ -91,8 +91,13 @@ export const Navigation = () => {
             session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
                     <User className="h-4 w-4" />
+                    {session?.user?.user_metadata?.app_role && (
+                      <span className="ml-1 rounded-full px-2 py-0.5 text-xs bg-primary/10 text-primary">
+                        {session.user.user_metadata.app_role}
+                      </span>
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end">
