@@ -13,7 +13,8 @@ import {
   Shield,
   Calendar,
   Package,
-  Banknote
+  Banknote,
+  Globe
 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { formatCurrency } from '@/lib/utils/currency';
@@ -73,10 +74,14 @@ export const OwnerDashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-10">
             <TabsTrigger value="overview">
               <BarChart3 className="mr-2 h-4 w-4" />
               Přehled
+            </TabsTrigger>
+            <TabsTrigger value="public-reservation">
+              <Globe className="mr-2 h-4 w-4" />
+              Veřejná rezervace
             </TabsTrigger>
             <TabsTrigger value="reservations">
               <Calendar className="mr-2 h-4 w-4" />
@@ -111,6 +116,38 @@ export const OwnerDashboard = () => {
               Pokladna
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="public-reservation">
+            <Card>
+              <CardHeader>
+                <CardTitle>Veřejná rezervace</CardTitle>
+                <CardDescription>
+                  Otevřete rezervační systém pro zákazníky
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center py-8">
+                  <Globe className="mx-auto h-12 w-12 text-primary mb-4" />
+                  <p className="text-muted-foreground mb-4">
+                    Rezervační systém inspirovaný Reservanto pro vaše zákazníky
+                  </p>
+                  <Button 
+                    className="mr-2"
+                    onClick={() => window.open('/rezervace/novy', '_blank')}
+                  >
+                    <Globe className="mr-2 h-4 w-4" />
+                    Otevřít rezervační systém
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => navigator.clipboard.writeText(window.location.origin + '/rezervace/novy')}
+                  >
+                    Kopírovat odkaz
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="overview" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
