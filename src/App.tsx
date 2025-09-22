@@ -23,18 +23,10 @@ import Users from "./pages/admin/Users";
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
 
-// Legacy pages (keeping for compatibility) 
+// Core pages
 import { Navigate } from "react-router-dom";
-import { EntryPage } from "./components/auth/EntryPage";
-import { RouteGuard } from "./components/auth/RouteGuard";
-import { PlayerDashboard } from "./pages/player/PlayerDashboard";
-import { StaffDashboard } from "./pages/staff/StaffDashboard";
-import { OwnerDashboard } from "./pages/owner/OwnerDashboard";
-import { GuestReservation } from "./pages/guest/GuestReservation";
 import { ReservantoReservation } from "./pages/ReservantoReservation";
 import CheckoutPage from "./pages/CheckoutPage";
-import { SetupOwner } from "./pages/SetupOwner";
-import { ResetPassword } from "./pages/ResetPassword";
 
 // Public pages
 import { HomePage } from "./pages/HomePage";
@@ -58,9 +50,7 @@ const App = () => (
           <Route path="/sluzby" element={<ServicesPage />} />
           <Route path="/cenik" element={<PricingPage />} />
           <Route path="/kontakt" element={<ContactPage />} />
-          <Route path="/rezervace" element={<Navigate to="/rezervace/novy" replace />} />
-          <Route path="/rezervace/novy" element={<ReservantoReservation />} />
-          <Route path="/rezervace/verejne" element={<PublicReservationPage />} />
+          <Route path="/rezervace" element={<ReservantoReservation />} />
           
           {/* Auth pages */}
           <Route path="/login" element={<Login />} />
@@ -74,6 +64,7 @@ const App = () => (
             {/* Staff and above can access management */}
             <Route element={<RoleRoute allow={["staff","coach","admin","owner"]} />}>
               <Route path="/sprava" element={<AdminCalendar />} />
+              <Route path="/admin/pokladna" element={<CheckoutPage />} />
             </Route>
             
             {/* Admin and owner only */}
@@ -83,74 +74,17 @@ const App = () => (
             </Route>
           </Route>
           
+          {/* Legacy redirects */}
+          <Route path="/app/hrac" element={<Navigate to="/profile" replace />} />
+          <Route path="/app/rezervace" element={<Navigate to="/profile" replace />} />
+          <Route path="/admin/obsluha" element={<Navigate to="/sprava" replace />} />
+          <Route path="/admin/personal" element={<Navigate to="/sprava" replace />} />
+          <Route path="/admin/majitel" element={<Navigate to="/nastaveni" replace />} />
+          <Route path="/rezervace/novy" element={<Navigate to="/rezervace" replace />} />
+          <Route path="/rezervace/verejne" element={<Navigate to="/rezervace" replace />} />
+          
           {/* Error pages */}
           <Route path="/403" element={<Forbidden />} />
-          
-          {/* Auth and admin */}
-          <Route path="/auth" element={<EntryPage />} />
-          
-          {/* Owner setup */}
-          <Route path="/setup-owner" element={<SetupOwner />} />
-          
-          {/* Password reset */}
-          <Route path="/reset-heslo" element={<ResetPassword />} />
-          
-          {/* Guest reservation */}
-          <Route path="/rezervace/host" element={<GuestReservation />} />
-          
-          {/* Reservanto-style reservation (duplicate removed) */}
-          
-          {/* Role-based dashboards */}
-          <Route 
-            path="/app/hrac" 
-            element={
-              <RouteGuard requireAuth={true} requiredRole="player">
-                <PlayerDashboard />
-              </RouteGuard>
-            } 
-          />
-          <Route 
-            path="/app/rezervace" 
-            element={
-              <RouteGuard requireAuth={true}>
-                <PlayerDashboard />
-              </RouteGuard>
-            } 
-          />
-          <Route 
-            path="/admin/obsluha" 
-            element={
-              <RouteGuard requireAuth={true} allowedRoles={['staff', 'owner']}>
-                <StaffDashboard />
-              </RouteGuard>
-            } 
-          />
-          <Route 
-            path="/admin/personal" 
-            element={
-              <RouteGuard requireAuth={true} allowedRoles={['staff', 'owner']}>
-                <StaffDashboard />
-              </RouteGuard>
-            } 
-          />
-          <Route 
-            path="/admin/majitel" 
-            element={
-              <RouteGuard requireAuth={true} requiredRole="owner">
-                <OwnerDashboard />
-              </RouteGuard>
-            } 
-          />
-          <Route 
-            path="/admin/pokladna" 
-            element={
-              <RouteGuard requireAuth={true} allowedRoles={['staff', 'owner']}>
-                <CheckoutPage />
-              </RouteGuard>
-            } 
-          />
-          
-          {/* 404 page */}
           <Route path="*" element={<NotFound />} />
         </Routes>
         </AuthProvider>
