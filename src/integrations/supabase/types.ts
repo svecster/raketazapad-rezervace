@@ -555,6 +555,39 @@ export type Database = {
         }
         Relationships: []
       }
+      price_rules: {
+        Row: {
+          court_type: string
+          created_at: string | null
+          id: string
+          member_price: number
+          non_member_price: number
+          season: string
+          time_period: string
+          updated_at: string | null
+        }
+        Insert: {
+          court_type: string
+          created_at?: string | null
+          id?: string
+          member_price?: number
+          non_member_price?: number
+          season: string
+          time_period: string
+          updated_at?: string | null
+        }
+        Update: {
+          court_type?: string
+          created_at?: string | null
+          id?: string
+          member_price?: number
+          non_member_price?: number
+          season?: string
+          time_period?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       reservations: {
         Row: {
           court_id: string | null
