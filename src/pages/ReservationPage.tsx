@@ -1,28 +1,24 @@
 import { useState, useEffect } from 'react';
 import { PublicLayout } from '@/components/layout/PublicLayout';
-import { WeeklyCalendar } from '@/components/reservation/WeeklyCalendar';
-import { ReservationModal } from '@/components/reservation/ReservationModal';
+import { DateNavigator } from '@/components/reservation/DateNavigator';
+import { ReservationGrid } from '@/components/reservation/ReservationGrid';
+import { BookingSummary } from '@/components/reservation/BookingSummary';
+import { BookingForm } from '@/components/reservation/BookingForm';
 import { useSession } from '@/auth/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { Calendar, Settings, LogIn, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { startOfWeek } from 'date-fns';
-
-interface Court {
-  id: string;
-  name: string;
-  type: 'indoor' | 'outdoor';
-  status: 'available' | 'unavailable';
-  seasonal_price_rules: any;
-}
+import { Court, Block, Slot } from '@/types/reservation';
+import { toggleSlot } from '@/lib/utils/slots';
+import { toast } from 'sonner';
 
 export const ReservationPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [step, setStep] = useState(0); // 0: selection, 1: booking form
+  const [startDate, setStartDate] = useState<Date>(new Date());
   const [courts, setCourts] = useState<Court[]>([]);
-  const [selectedSlots, setSelectedSlots] = useState<any[]>([]);
+  const [selectedBlocks, setSelectedBlocks] = useState<Block[]>([]);
   const { session, loading } = useSession();
 
   useEffect(() => {
@@ -36,40 +32,90 @@ export const ReservationPage = () => {
       .eq('status', 'available');
     
     if (data && !error) {
-      setCourts(data);
+      // Transform data to match our Court interface
+      const transformedCourts: Court[] = data.map(court => ({
+        ...court,
+        seasonal_price_rules: court.seasonal_price_rules as Record<string, any>
+      }));
+      setCourts(transformedCourts);
     }
   };
 
-  const handleSlotSelect = (slot: any) => {
-    setSelectedSlots([slot]);
-    setIsModalOpen(true);
+  const handleSlotClick = (slot: Slot) => {
+    // Find court name for the slot
+    const court = courts.find(c => c.id === slot.courtId);
+    const courtName = court?.name || `Kurt ${slot.courtId}`;
+    
+    const newBlocks = toggleSlot(selectedBlocks, slot, courtName);
+    setSelectedBlocks(newBlocks);
   };
 
+  const handleRemoveBlock = (blockIndex: number) => {
+    const newBlocks = [...selectedBlocks];
+    newBlocks.splice(blockIndex, 1);
+    setSelectedBlocks(newBlocks);
+  };
+
+  const handleNextStep = () => {
+    if (selectedBlocks.length > 0) {
+      setStep(1);
+    }
+  };
+
+  const handleBack = () => {
+    setStep(0);
+  };
+
+  const handleBookingSuccess = () => {
+    setSelectedBlocks([]);
+    setStep(0);
+    toast.success('Rezervace byla úspěšně vytvořena!');
+  };
+
+  // Step 1: Booking form
+  if (step === 1) {
+    return (
+      <PublicLayout>
+        <BookingForm
+          selectedBlocks={selectedBlocks}
+          onBack={handleBack}
+          onSuccess={handleBookingSuccess}
+        />
+      </PublicLayout>
+    );
+  }
+
+  // Step 0: Slot selection
   return (
     <PublicLayout>
-      <section className="section-padding">
-        <div className="container-max">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-heading font-bold mb-4">Rezervace kurtů</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Vyberte si čas a kurt pro vaši hru. Rezervace je rychlá a jednoduchá.
-            </p>
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <div className="bg-card border-b">
+          <div className="container max-w-7xl mx-auto px-4">
+            <div className="py-6">
+              <h1 className="text-3xl font-bold mb-2">Rezervace kurtů</h1>
+              <p className="text-muted-foreground">
+                Vyberte si termín a kurt pro vaši hru. Kliknutím na volné sloty vytvoříte rezervaci.
+              </p>
+            </div>
           </div>
+        </div>
 
-          {/* Auth-dependent content */}
-          {!loading && !session && (
-            <Card className="mb-8">
+        {/* Auth check */}
+        {!loading && !session && (
+          <div className="container max-w-7xl mx-auto px-4 py-6">
+            <Card>
               <CardHeader className="text-center space-y-4">
                 <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
                   <LogIn className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="text-2xl font-heading">
+                <CardTitle className="text-2xl">
                   Přihlaste se pro rezervaci
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-center space-y-6">
                 <p className="text-muted-foreground">
-                  Pro vytvoření rezervace se musíte nejdříve přihlásit do svého účtu.
+                  Pro vytvoření rezervace můžete pokračovat jako host nebo se přihlásit do svého účtu.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg">
@@ -82,60 +128,59 @@ export const ReservationPage = () => {
                     <Link to="/register">Vytvořit účet</Link>
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {session && (
-            <Card className="mb-8">
-              <CardHeader className="text-center space-y-4">
-                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                  <Calendar className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-2xl font-heading">
-                  Vyberte termín rezervace
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-center space-y-6">
-                <p className="text-muted-foreground">
-                  Kliknutím na volný slot níže vytvoříte novou rezervaci.
+                <p className="text-xs text-muted-foreground">
+                  Nebo pokračujte níže jako host
                 </p>
-                {session?.user?.user_metadata?.app_role === 'staff' || 
-                 session?.user?.user_metadata?.app_role === 'owner' ? (
-                  <Button asChild size="lg" variant="outline">
-                    <Link to="/sprava" className="flex items-center space-x-2">
-                      <Settings className="h-4 w-4" />
-                      <span>Přejít do správy rezervací</span>
-                    </Link>
-                  </Button>
-                ) : null}
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* Staff link */}
+        {session?.user?.user_metadata?.app_role === 'staff' || 
+         session?.user?.user_metadata?.app_role === 'owner' ? (
+          <div className="container max-w-7xl mx-auto px-4 py-4">
+            <Button asChild variant="outline">
+              <Link to="/sprava" className="flex items-center space-x-2">
+                <Settings className="h-4 w-4" />
+                <span>Přejít do správy rezervací</span>
+              </Link>
+            </Button>
+          </div>
+        ) : null}
+
+        {/* Date Navigator */}
+        <DateNavigator
+          selectedDate={startDate}
+          onDateChange={setStartDate}
+        />
+
+        {/* Main content */}
+        <div className="container max-w-7xl mx-auto px-4">
+          {courts.length > 0 ? (
+            <ReservationGrid
+              courts={courts}
+              startDate={startDate}
+              selectedBlocks={selectedBlocks}
+              onSlotClick={handleSlotClick}
+            />
+          ) : (
+            <div className="text-center py-16 text-muted-foreground">
+              Načítají se dostupné kurty...
+            </div>
           )}
+        </div>
 
-          {/* Calendar */}
+        {/* Booking Summary */}
+        <BookingSummary
+          selectedBlocks={selectedBlocks}
+          onRemoveBlock={handleRemoveBlock}
+          onNextStep={handleNextStep}
+        />
+
+        {/* Contact info */}
+        <div className="container max-w-7xl mx-auto px-4 py-8">
           <Card>
-            <CardHeader>
-              <CardTitle>Dostupné termíny</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {courts.length > 0 ? (
-                <WeeklyCalendar
-                  courts={courts}
-                  currentWeek={currentWeek}
-                  selectedSlots={selectedSlots}
-                  onSlotSelect={handleSlotSelect}
-                />
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  Načítají se dostupné kurty...
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Contact info for help */}
-          <Card className="mt-8">
             <CardHeader>
               <CardTitle>Potřebujete pomoc?</CardTitle>
             </CardHeader>
@@ -160,12 +205,7 @@ export const ReservationPage = () => {
             </CardContent>
           </Card>
         </div>
-      </section>
-
-      <ReservationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      </div>
     </PublicLayout>
   );
 };
