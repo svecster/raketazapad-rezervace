@@ -25,12 +25,12 @@ import NotFound from "./pages/NotFound";
 
 // Core pages
 import { Navigate } from "react-router-dom";
-import { ReservantoReservation } from "./pages/ReservantoReservation";
+import { ReservationPage } from "./pages/ReservationPage";
+import { ManagementPage } from "./pages/ManagementPage";
 import CheckoutPage from "./pages/CheckoutPage";
 
 // Public pages
 import { HomePage } from "./pages/HomePage";
-import { PublicReservationPage } from "./pages/PublicReservationPage";
 import { ServicesPage } from "./pages/ServicesPage";
 import { PricingPage } from "./pages/PricingPage";
 import { ContactPage } from "./pages/ContactPage";
@@ -50,7 +50,7 @@ const App = () => (
           <Route path="/sluzby" element={<ServicesPage />} />
           <Route path="/cenik" element={<PricingPage />} />
           <Route path="/kontakt" element={<ContactPage />} />
-          <Route path="/rezervace" element={<ReservantoReservation />} />
+          <Route path="/rezervace" element={<ReservationPage />} />
           
           {/* Auth pages */}
           <Route path="/login" element={<Login />} />
@@ -63,7 +63,7 @@ const App = () => (
             
             {/* Staff and above can access management */}
             <Route element={<RoleRoute allow={["staff","coach","admin","owner"]} />}>
-              <Route path="/sprava" element={<AdminCalendar />} />
+              <Route path="/sprava" element={<ManagementPage />} />
               <Route path="/admin/pokladna" element={<CheckoutPage />} />
             </Route>
             
