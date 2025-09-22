@@ -14,7 +14,7 @@ export function isAdjacent(a: Slot, b: Slot): boolean {
 /**
  * Merge an array of slots into a continuous block
  */
-export function mergeSlotsToBlock(slots: Slot[]): Block {
+export function mergeSlotsToBlock(slots: Slot[], courtName: string): Block {
   if (slots.length === 0) {
     throw new Error('Cannot merge empty slots array');
   }
@@ -24,9 +24,6 @@ export function mergeSlotsToBlock(slots: Slot[]): Block {
   
   const firstSlot = sortedSlots[0];
   const lastSlot = sortedSlots[sortedSlots.length - 1];
-  
-  // Get court name from first slot (we'll need to pass this from the component)
-  const courtName = `Kurt ${firstSlot.courtId}`;
   
   const totalPrice = sortedSlots.reduce((sum, slot) => sum + slot.price, 0);
   
@@ -76,7 +73,7 @@ export function toggleSlot(blocks: Block[], slot: Slot, courtName: string): Bloc
       const continuousGroups = groupContinuousSlots(newSlots);
       continuousGroups.forEach(group => {
         if (group.length > 0) {
-          newBlocks.push(mergeSlotsToBlock(group.map(s => ({ ...s, courtName }))));
+          newBlocks.push(mergeSlotsToBlock(group, courtName));
         }
       });
     }
@@ -84,8 +81,6 @@ export function toggleSlot(blocks: Block[], slot: Slot, courtName: string): Bloc
     return newBlocks;
   } else {
     // Slot doesn't exist, add it
-    const slotWithCourtName = { ...slot, courtName };
-    
     // Find adjacent blocks
     const adjacentBlocks: number[] = [];
     
@@ -103,17 +98,17 @@ export function toggleSlot(blocks: Block[], slot: Slot, courtName: string): Bloc
     
     if (adjacentBlocks.length === 0) {
       // No adjacent blocks, create new block
-      return [...blocks, mergeSlotsToBlock([slotWithCourtName])];
+      return [...blocks, mergeSlotsToBlock([slot], courtName)];
     } else {
       // Merge with adjacent blocks
       const nonAdjacentBlocks = blocks.filter((_, index) => !adjacentBlocks.includes(index));
       
-      let allSlots = [slotWithCourtName];
+      let allSlots = [slot];
       adjacentBlocks.forEach(blockIndex => {
-        allSlots = allSlots.concat(blocks[blockIndex].slots.map(s => ({ ...s, courtName })));
+        allSlots = allSlots.concat(blocks[blockIndex].slots);
       });
       
-      const newBlock = mergeSlotsToBlock(allSlots);
+      const newBlock = mergeSlotsToBlock(allSlots, courtName);
       return [...nonAdjacentBlocks, newBlock];
     }
   }
