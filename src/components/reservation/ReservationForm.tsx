@@ -1,15 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, User, Mail, Phone, MessageSquare, Calendar, Clock } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils/currency';
-import { format } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface TimeSlot {
   courtId: string;
@@ -49,207 +44,177 @@ export const ReservationForm = ({
   onPreviousStep,
   onConfirmReservation
 }: ReservationFormProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [rememberData, setRememberData] = useState(false);
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!contactData.name.trim()) {
+      newErrors.name = 'Jméno je povinné';
+    }
+
+    if (!contactData.email.trim()) {
+      newErrors.email = 'E-mail je povinný';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactData.email)) {
+      newErrors.email = 'Neplatný formát e-mailu';
+    }
+
+    if (!contactData.phone.trim()) {
+      newErrors.phone = 'Telefon je povinný';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validateForm()) {
+      onConfirmReservation();
+    }
+  };
 
   const handleInputChange = (field: keyof ContactData, value: string) => {
     onContactDataChange({
       ...contactData,
       [field]: value
     });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
     
-    if (!contactData.name || !contactData.email || !contactData.phone) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await onConfirmReservation();
-    } finally {
-      setIsSubmitting(false);
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors({
+        ...errors,
+        [field]: ''
+      });
     }
   };
-
-  const isFormValid = contactData.name.trim() && 
-                     contactData.email.trim() && 
-                     contactData.phone.trim();
-
-  // Group slots by date for display
-  const groupedSlots = selectedSlots.reduce((acc, slot) => {
-    const dateKey = format(slot.date, 'yyyy-MM-dd');
-    if (!acc[dateKey]) {
-      acc[dateKey] = {
-        date: slot.date,
-        slots: []
-      };
-    }
-    acc[dateKey].slots.push(slot);
-    return acc;
-  }, {} as Record<string, { date: Date; slots: SelectedSlot[] }>);
 
   return (
-    <div className="space-y-6">
-      {/* Back Button */}
-      <Button 
-        variant="outline" 
-        onClick={onPreviousStep}
-        className="mb-4"
-      >
-        <ChevronLeft className="w-4 h-4 mr-2" />
-        Zpět na výběr termínu
-      </Button>
+    <div className="max-w-2xl mx-auto bg-white">
+      <h2 className="text-xl font-medium mb-6">Rezervace bez přihlášení</h2>
+      
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-sm font-medium">
+              Jméno a příjmení *
+            </Label>
+            <Input
+              id="name"
+              value={contactData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              className={`border border-blue-300 focus:border-blue-500 focus:ring-blue-500 ${
+                errors.name ? 'border-red-500' : ''
+              }`}
+              placeholder=""
+            />
+            {errors.name && (
+              <p className="text-sm text-red-500">{errors.name}</p>
+            )}
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Contact Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <User className="h-5 w-5" />
-              <span>Kontaktní údaje</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="flex items-center space-x-2">
-                  <User className="h-4 w-4" />
-                  <span>Jméno a příjmení *</span>
-                </Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={contactData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Zadejte své jméno"
-                  required
-                />
-              </div>
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium">
+              E-mail *
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={contactData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              className={`border border-blue-300 focus:border-blue-500 focus:ring-blue-500 ${
+                errors.email ? 'border-red-500' : ''
+              }`}
+              placeholder=""
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email}</p>
+            )}
+          </div>
+        </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="flex items-center space-x-2">
-                  <Mail className="h-4 w-4" />
-                  <span>E-mail *</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={contactData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="vase@email.cz"
-                  required
-                />
-              </div>
+        <div className="space-y-2">
+          <Label htmlFor="phone" className="text-sm font-medium">
+            Telefon *
+          </Label>
+          <Input
+            id="phone"
+            type="tel"
+            value={contactData.phone}
+            onChange={(e) => handleInputChange('phone', e.target.value)}
+            className={`border border-blue-300 focus:border-blue-500 focus:ring-blue-500 ${
+              errors.phone ? 'border-red-500' : ''
+            }`}
+            placeholder=""
+          />
+          {errors.phone && (
+            <p className="text-sm text-red-500">{errors.phone}</p>
+          )}
+        </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="flex items-center space-x-2">
-                  <Phone className="h-4 w-4" />
-                  <span>Telefon *</span>
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={contactData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="+420 123 456 789"
-                  required
-                />
-              </div>
+        <div className="space-y-2">
+          <Label htmlFor="notes" className="text-sm font-medium">
+            Poznámka
+          </Label>
+          <Textarea
+            id="notes"
+            value={contactData.notes || ''}
+            onChange={(e) => handleInputChange('notes', e.target.value)}
+            className="border border-blue-300 focus:border-blue-500 focus:ring-blue-500 min-h-[100px]"
+            placeholder=""
+            rows={4}
+          />
+        </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="notes" className="flex items-center space-x-2">
-                  <MessageSquare className="h-4 w-4" />
-                  <span>Poznámka</span>
-                </Label>
-                <Textarea
-                  id="notes"
-                  value={contactData.notes || ''}
-                  onChange={(e) => handleInputChange('notes', e.target.value)}
-                  placeholder="Doplňující informace k rezervaci..."
-                  rows={3}
-                />
-              </div>
+        <div className="text-sm text-gray-600">
+          * Položky označené jsou povinné.
+        </div>
 
-              <Separator />
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="remember"
+            checked={rememberData}
+            onCheckedChange={(checked) => setRememberData(checked as boolean)}
+          />
+          <Label htmlFor="remember" className="text-sm text-gray-700">
+            Pamatovat si zadané údaje na tomto počítači
+          </Label>
+        </div>
 
-              <div className="bg-muted/30 p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-2">
-                  Chcete vytvořit účet pro snadnější správu rezervací?
-                </p>
-                <Button variant="outline" size="sm" type="button">
-                  Přihlásit se / Vytvořit účet
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+        {/* Account buttons */}
+        <div className="flex space-x-4">
+          <Button
+            variant="outline"
+            className="bg-blue-500 hover:bg-blue-600 text-white border-blue-500 px-8"
+          >
+            Přihlášení
+          </Button>
+          <Button
+            variant="outline"
+            className="bg-blue-500 hover:bg-blue-600 text-white border-blue-500 px-8"
+          >
+            Vytvoření účtu
+          </Button>
+        </div>
+      </div>
 
-        {/* Reservation Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5" />
-              <span>Souhrn rezervace</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {Object.entries(groupedSlots)
-              .sort(([a], [b]) => a.localeCompare(b))
-              .map(([dateKey, group]) => (
-                <div key={dateKey} className="space-y-3">
-                  <div className="font-medium">
-                    {format(group.date, 'EEEE, dd. MMMM yyyy', { locale: cs })}
-                  </div>
-                  
-                  {group.slots
-                    .sort((a, b) => `${a.courtName}-${a.startTime}`.localeCompare(`${b.courtName}-${b.startTime}`))
-                    .map((slot) => (
-                      <div key={slot.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                        <div className="space-y-1">
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="outline">{slot.courtName}</Badge>
-                          </div>
-                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            <span>{slot.startTime} - {slot.endTime}</span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-medium">
-                            {formatCurrency(slot.price)}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            30 min
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              ))}
+      {/* Navigation buttons */}
+      <div className="flex justify-between items-center mt-8 pt-6 border-t">
+        <button
+          onClick={onPreviousStep}
+          className="text-gray-600 hover:text-gray-800 flex items-center space-x-2"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          <span>Zpět</span>
+        </button>
 
-            <Separator />
-
-            <div className="flex items-center justify-between text-lg font-semibold">
-              <span>Celková cena:</span>
-              <span className="text-primary">{formatCurrency(totalPrice)}</span>
-            </div>
-
-            <Button
-              onClick={handleSubmit}
-              disabled={!isFormValid || isSubmitting}
-              size="lg"
-              className="w-full bg-primary hover:bg-primary/90"
-            >
-              {isSubmitting ? 'Vytváří se rezervace...' : 'Potvrdit rezervaci'}
-            </Button>
-
-            <p className="text-xs text-muted-foreground text-center">
-              Po potvrzení rezervace obdržíte potvrzovací e-mail s detaily platby.
-            </p>
-          </CardContent>
-        </Card>
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded font-medium flex items-center space-x-2"
+        >
+          <span>Další krok</span>
+          <ChevronRight className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );

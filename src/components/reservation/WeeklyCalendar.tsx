@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency } from '@/lib/utils/currency';
 import { getSeasonFromDate } from '@/lib/utils/datetime';
 import { addDays, format, startOfDay, endOfDay } from 'date-fns';
 import { cs } from 'date-fns/locale';
@@ -48,17 +45,17 @@ export const WeeklyCalendar = ({ courts, currentWeek, selectedSlots, onSlotSelec
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Generate time slots (7:00 - 23:00, 30-minute intervals)
+  // Generate time slots (8:00 - 17:00, 30-minute intervals)
   const generateTimeSlots = () => {
     const slots = [];
-    for (let hour = 7; hour <= 22; hour++) {
+    for (let hour = 8; hour <= 16; hour++) {
       slots.push(`${hour.toString().padStart(2, '0')}:00`);
       slots.push(`${hour.toString().padStart(2, '0')}:30`);
     }
     return slots;
   };
 
-  // Generate week days
+  // Generate week days (Monday-Sunday)
   const generateWeekDays = () => {
     const days = [];
     for (let i = 0; i < 7; i++) {
@@ -149,126 +146,60 @@ export const WeeklyCalendar = ({ courts, currentWeek, selectedSlots, onSlotSelec
 
   if (loading) {
     return (
-      <Card className="p-6">
-        <div className="text-center text-muted-foreground">Načítání kalendáře...</div>
-      </Card>
+      <div className="text-center py-8 text-muted-foreground">Načítání kalendáře...</div>
     );
   }
 
-  // Calculate total columns (1 for court names + days * time slots per day)
-  const timeColumnsPerDay = 8; // Show 8 time slots per day for simplicity (each represents 2 hours)
-  const totalColumns = 1 + (weekDays.length * timeColumnsPerDay);
-  
-  // Select representative time slots for headers (every 2 hours)
-  const displayTimeSlots = timeSlots.filter((_, index) => index % 4 === 0); // Every 2 hours
-
   return (
-    <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <div className="min-w-[1200px]">
-          {/* Header with days and time slots */}
-          <div className="bg-muted/30 border-b">
-            <div className="grid" style={{ gridTemplateColumns: `120px repeat(${weekDays.length}, 1fr)` }}>
-              <div className="p-3 font-medium text-sm border-r">Kurt / Čas</div>
-              {weekDays.map((day, dayIndex) => (
-                <div key={dayIndex} className="border-l">
-                  <div className="p-2 text-center font-medium text-sm border-b">
-                    <div>{format(day, 'EEEE', { locale: cs })}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {format(day, 'dd.MM', { locale: cs })}
-                    </div>
-                  </div>
-                  {/* Time slots header */}
-                  <div className="grid grid-cols-8 text-xs">
-                    {displayTimeSlots.map((time, timeIndex) => (
-                      <div key={timeIndex} className="p-1 text-center border-r last:border-r-0 bg-muted/20">
-                        {time}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+    <div className="bg-white border border-gray-200">
+      {/* Time slots header */}
+      <div className="grid border-b" style={{ gridTemplateColumns: `140px repeat(${timeSlots.length}, 1fr)` }}>
+        <div className="p-2 text-sm font-medium text-gray-600 border-r"></div>
+        {timeSlots.map((time, index) => (
+          <div key={index} className="p-2 text-xs text-center font-medium text-gray-600 border-r last:border-r-0">
+            {time}
           </div>
+        ))}
+      </div>
 
-          {/* Court rows */}
-          {courts.map((court) => (
-            <div key={court.id} className="border-b">
-              <div className="grid" style={{ gridTemplateColumns: `120px repeat(${weekDays.length}, 1fr)` }}>
-                {/* Court name */}
-                <div className="p-3 text-sm font-medium bg-muted/10 border-r flex items-center">
-                  <div>
-                    <div className="font-medium">{court.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {court.type === 'indoor' ? 'Hala' : 'Venkovní'}
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Time slots for each day */}
-                {weekDays.map((day, dayIndex) => (
-                  <div key={dayIndex} className="border-l">
-                    <div className="grid grid-cols-8">
-                      {displayTimeSlots.map((time, timeIndex) => {
-                        const isOccupied = isSlotOccupied(court.id, day, time);
-                        const isSelected = isSlotSelected(court.id, day, time);
-                        const price = getSlotPrice(court, day);
-                        
-                        return (
-                          <Button
-                            key={timeIndex}
-                            variant="ghost"
-                            size="sm"
-                            className={`h-16 p-1 rounded-none border-r last:border-r-0 text-xs flex flex-col justify-center
-                              ${isSelected ? 'bg-primary text-primary-foreground hover:bg-primary/90' : ''}
-                              ${isOccupied ? 'bg-destructive/10 text-destructive cursor-not-allowed' : 'hover:bg-muted/50'}
-                            `}
-                            onClick={() => handleSlotClick(court, day, time)}
-                            disabled={isOccupied}
-                          >
-                            {isOccupied ? (
-                              <div className="text-center">
-                                <div className="font-medium text-destructive">Obsazeno</div>
-                              </div>
-                            ) : (
-                              <div className="text-center">
-                                <div className="font-medium text-xs">
-                                  {formatCurrency(price)}
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  30 min
-                                </div>
-                              </div>
-                            )}
-                          </Button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
+      {/* Court rows */}
+      {courts.map((court) => (
+        <div key={court.id} className="border-b last:border-b-0">
+          <div className="grid" style={{ gridTemplateColumns: `140px repeat(${timeSlots.length}, 1fr)` }}>
+            {/* Court name */}
+            <div className="p-3 text-sm font-medium bg-gray-50 border-r">
+              <div>{court.name}</div>
+              <div className="text-xs text-gray-500 mt-1">2024/2025</div>
             </div>
-          ))}
+            
+            {/* Time slots */}
+            {timeSlots.map((time, timeIndex) => {
+              const isOccupied = isSlotOccupied(court.id, weekDays[0], time); // Using first day for demo
+              const isSelected = isSlotSelected(court.id, weekDays[0], time);
+              const price = getSlotPrice(court, weekDays[0]);
+              
+              return (
+                <button
+                  key={timeIndex}
+                  className={`p-2 text-xs border-r last:border-r-0 min-h-[60px] flex items-center justify-center transition-colors
+                    ${isSelected ? 'bg-blue-500 text-white' : ''}
+                    ${isOccupied ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'}
+                    ${!isSelected && !isOccupied ? 'text-gray-800' : ''}
+                  `}
+                  onClick={() => !isOccupied && handleSlotClick(court, weekDays[0], time)}
+                  disabled={isOccupied}
+                >
+                  {isOccupied ? (
+                    <span className="text-gray-500">Obsazeno</span>
+                  ) : (
+                    <span className="font-medium">{price} Kč</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
-      
-      {/* Legend */}
-      <div className="p-3 bg-muted/20 border-t text-xs text-muted-foreground">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-primary rounded"></div>
-            <span>Vybrané</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-destructive/10 border border-destructive rounded"></div>
-            <span>Obsazené</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-muted border rounded"></div>
-            <span>Dostupné</span>
-          </div>
-        </div>
-      </div>
-    </Card>
+      ))}
+    </div>
   );
 };

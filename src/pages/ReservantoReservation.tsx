@@ -160,66 +160,48 @@ export const ReservantoReservation = () => {
     <Layout>
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-foreground">Rezervace kurtů</h1>
-          <p className="text-muted-foreground">
-            Vyberte si termíny a dokončete rezervaci
-          </p>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-2xl font-normal text-blue-400">ONLINE REZERVACE</h1>
+          </div>
+          <div className="text-right">
+            <div className="text-blue-500 font-bold text-lg">tenis<span className="bg-blue-500 text-white px-1 rounded">a</span></div>
+          </div>
         </div>
 
-        {/* Step Indicator */}
-        <div className="flex items-center justify-center space-x-4 py-4">
-          <div className="flex items-center space-x-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              currentStep >= 1 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-            }`}>
-              <Calendar className="w-4 h-4" />
-            </div>
-            <span className={currentStep >= 1 ? 'font-medium' : 'text-muted-foreground'}>
-              Výběr termínu
-            </span>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-4">
+            <button className="text-gray-600 hover:text-gray-800">
+              ←
+            </button>
+            <h2 className="text-lg font-semibold">Vyberte rezervaci</h2>
+            <button className="text-gray-600 hover:text-gray-800">
+              →
+            </button>
+            <button className="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-sm">
+              📅 Kalendář
+            </button>
           </div>
-          
-          <div className={`w-8 h-px ${currentStep >= 2 ? 'bg-primary' : 'bg-muted'}`} />
-          
-          <div className="flex items-center space-x-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              currentStep >= 2 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-            }`}>
-              <User className="w-4 h-4" />
-            </div>
-            <span className={currentStep >= 2 ? 'font-medium' : 'text-muted-foreground'}>
-              Kontaktní údaje
-            </span>
+          <div className="text-right">
+            <span className="text-sm text-gray-600">Nepřihlášen (</span>
+            <button className="text-blue-500 text-sm hover:underline">přihlášení</button>
+            <span className="text-sm text-gray-600">)</span>
           </div>
         </div>
+
+        <div className="mb-4">
+          <label className="text-sm font-medium text-gray-700">Rezervovaná služba:</label>
+          <select className="ml-2 border border-gray-300 rounded px-3 py-1 text-sm">
+            <option>HALA 2024/2025</option>
+          </select>
+        </div>
+
 
         {/* Step 1: Calendar */}
         {currentStep === 1 && (
           <div className="space-y-6">
-            {/* Week Navigation */}
-            <div className="flex items-center justify-between">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigateWeek('prev')}
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                Předchozí týden
-              </Button>
-              
-              <h2 className="text-lg font-semibold">
-                {format(currentWeek, 'dd.MM.yyyy', { locale: cs })} - {format(addDays(currentWeek, 6), 'dd.MM.yyyy', { locale: cs })}
-              </h2>
-              
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigateWeek('next')}
-              >
-                Další týden
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
+            <div className="text-lg font-semibold mb-4">
+              {format(addDays(currentWeek, 0), 'EEEE dd. MMMM yyyy', { locale: cs })}
             </div>
 
             {/* Calendar Grid */}
@@ -252,11 +234,22 @@ export const ReservantoReservation = () => {
           />
         )}
 
-        {/* Manage Reservations Link */}
+        {/* Footer */}
+        <div className="fixed bottom-4 left-4 flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <div className="bg-black text-white px-2 py-1 rounded font-bold">
+              <span className="text-white">⚡</span> RESERVANTO
+            </div>
+            <button className="text-blue-500 hover:underline text-sm">
+              📋 Správa vašich rezervací
+            </button>
+          </div>
+        </div>
+
         <div className="fixed bottom-4 right-4">
-          <Button variant="outline" size="sm" className="shadow-lg">
-            Správa vašich rezervací
-          </Button>
+          <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-medium">
+            Další krok →
+          </button>
         </div>
       </div>
     </Layout>
