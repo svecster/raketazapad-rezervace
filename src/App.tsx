@@ -19,6 +19,13 @@ import AdminCalendar from "./pages/admin/AdminCalendar";
 import Settings from "./pages/admin/Settings";
 import Users from "./pages/admin/Users";
 
+// POS pages
+import PosPage from "./pages/pos/PosPage";
+import StockPage from "./pages/pos/StockPage";
+import InventoryPage from "./pages/pos/InventoryPage";
+import ReportsPage from "./pages/pos/ReportsPage";
+import PosSettingsPage from "./pages/pos/PosSettingsPage";
+
 // Error pages
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
@@ -65,16 +72,21 @@ const App = () => (
             <Route path="/moje-rezervace" element={<MyReservationsPage />} />
             <Route path="/platby" element={<PaymentHistoryPage />} />
             
-            {/* Staff and above can access management */}
+            {/* Staff and above can access management and POS */}
             <Route element={<RoleRoute allow={["staff","coach","admin","owner"]} />}>
               <Route path="/sprava" element={<ManagementPage />} />
               <Route path="/admin/pokladna" element={<CheckoutPage />} />
+              <Route path="/pokladna" element={<PosPage />} />
+              <Route path="/sklad" element={<StockPage />} />
             </Route>
             
             {/* Admin and owner only */}
             <Route element={<RoleRoute allow={["admin","owner"]} />}>
               <Route path="/nastaveni" element={<Settings />} />
               <Route path="/uzivatele" element={<Users />} />
+              <Route path="/inventury" element={<InventoryPage />} />
+              <Route path="/reporty" element={<ReportsPage />} />
+              <Route path="/nastaveni/pokladna" element={<PosSettingsPage />} />
             </Route>
           </Route>
           
