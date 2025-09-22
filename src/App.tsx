@@ -28,6 +28,8 @@ import { Navigate } from "react-router-dom";
 import { ReservationPage } from "./pages/ReservationPage";
 import { ManagementPage } from "./pages/ManagementPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import { MyReservationsPage } from "./pages/MyReservationsPage";
+import { PaymentHistoryPage } from "./pages/PaymentHistoryPage";
 
 // Public pages
 import { HomePage } from "./pages/HomePage";
@@ -60,6 +62,8 @@ const App = () => (
           {/* Protected routes */}
           <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<Profile />} />
+            <Route path="/moje-rezervace" element={<MyReservationsPage />} />
+            <Route path="/platby" element={<PaymentHistoryPage />} />
             
             {/* Staff and above can access management */}
             <Route element={<RoleRoute allow={["staff","coach","admin","owner"]} />}>

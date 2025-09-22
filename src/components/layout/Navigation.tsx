@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Phone, User, LogOut, Settings, Users, Calendar } from 'lucide-react';
+import { Menu, X, Phone, User, LogOut, Settings, Users, Calendar, CreditCard } from 'lucide-react';
 import { useSession, hasRole } from '@/auth/AuthProvider';
 import {
   DropdownMenu,
@@ -108,6 +108,18 @@ export const Navigation = () => {
                       <Link to="/profile" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
                         Profil
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/moje-rezervace" className="flex items-center">
+                        <Calendar className="mr-2 h-4 w-4" />
+                        Moje rezervace
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/platby" className="flex items-center">
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Moje platby
                       </Link>
                     </DropdownMenuItem>
                     {isStaff && (
@@ -247,6 +259,18 @@ export const Navigation = () => {
                       <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
                         <User className="mr-2 h-4 w-4" />
                         Můj profil
+                      </Link>
+                    </Button>
+                    <Button variant="outline" asChild className="w-full">
+                      <Link to="/moje-rezervace" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Calendar className="mr-2 h-4 w-4" />
+                        Moje rezervace
+                      </Link>
+                    </Button>
+                    <Button variant="outline" asChild className="w-full">
+                      <Link to="/platby" onClick={() => setIsMobileMenuOpen(false)}>
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Moje platby
                       </Link>
                     </Button>
                     <Button variant="outline" asChild className="w-full">
