@@ -130,7 +130,7 @@ export default function PosPage() {
         .from('sales')
         .insert({
           user_id: user?.id,
-          reservation_id: linkedReservation?.id,
+          reservation_id: linkedReservation ? parseInt(linkedReservation.id) : null,
           total_amount: total,
           payment_method: 'cash',
           status: 'paid'

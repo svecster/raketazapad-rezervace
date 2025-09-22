@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, Copy, QrCode } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/currency';
 import { toast } from 'sonner';
+import { qrPaymentService } from '@/services/qrPaymentService';
 
 interface QRPaymentModalProps {
   amount: number;
@@ -24,30 +25,14 @@ export function QRPaymentModal({ amount, onClose, onComplete }: QRPaymentModalPr
 
   const generateQRCode = async () => {
     try {
-      // For now, create a simple bank transfer string
-      // This should use the actual QR payment service when implemented
-      const paymentData = {
-        amount: amount,
-        currency: 'CZK',
-        message: 'Platba za nákup - Tenis Nisa',
-        recipient: 'Tenis Nisa'
-      };
-
-      const paymentStr = `Příjemce: ${paymentData.recipient}\nČástka: ${formatCurrency(paymentData.amount)}\nZpráva: ${paymentData.message}`;
+      // Generate actual QR code using the payment service
+      const result = await qrPaymentService.generateBarOrderQR(
+        `POS-${Date.now()}`, // Generate unique order ID
+        amount
+      );
       
-      setPaymentString(paymentStr);
-      
-      // Generate QR code (placeholder - would use actual QR generation)
-      setQrCodeDataUrl('data:image/svg+xml;base64,' + btoa(`
-        <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-          <rect width="200" height="200" fill="white"/>
-          <rect x="10" y="10" width="180" height="180" fill="black"/>
-          <rect x="20" y="20" width="160" height="160" fill="white"/>
-          <text x="100" y="100" text-anchor="middle" fill="black" font-size="12">QR Code</text>
-          <text x="100" y="120" text-anchor="middle" fill="black" font-size="10">${formatCurrency(amount)}</text>
-        </svg>
-      `));
-      
+      setQrCodeDataUrl(result.qrCode);
+      setPaymentString(result.paymentString);
       setLoading(false);
     } catch (error) {
       console.error('Error generating QR code:', error);
