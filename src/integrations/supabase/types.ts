@@ -538,6 +538,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "inventory_counts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_staff_view"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "inventory_counts_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
@@ -757,10 +764,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "recipes_component_id_fkey"
+            columns: ["component_id"]
+            isOneToOne: false
+            referencedRelation: "products_staff_view"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "recipes_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recipes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_staff_view"
             referencedColumns: ["id"]
           },
         ]
@@ -872,6 +893,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_staff_view"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "sale_items_sale_id_fkey"
             columns: ["sale_id"]
             isOneToOne: false
@@ -912,6 +940,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_sales_reservation_id"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "sales_reservation_fk"
             columns: ["reservation_id"]
@@ -1001,6 +1036,13 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_staff_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_profiles: {
@@ -1062,7 +1104,51 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      products_staff_view: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: number | null
+          is_active: boolean | null
+          min_stock: number | null
+          name: string | null
+          sell_price: number | null
+          sku: string | null
+          stock_qty: number | null
+          track_stock: boolean | null
+          unit: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id?: number | null
+          is_active?: boolean | null
+          min_stock?: number | null
+          name?: string | null
+          sell_price?: number | null
+          sku?: string | null
+          stock_qty?: number | null
+          track_stock?: boolean | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: number | null
+          is_active?: boolean | null
+          min_stock?: number | null
+          name?: string | null
+          sell_price?: number | null
+          sku?: string | null
+          stock_qty?: number | null
+          track_stock?: boolean | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       app_role: {
@@ -1086,7 +1172,7 @@ export type Database = {
         Returns: string
       }
       get_user_role: {
-        Args: { user_uuid: string }
+        Args: { uid: string }
         Returns: Database["public"]["Enums"]["user_role"]
       }
     }
@@ -1103,7 +1189,7 @@ export type Database = {
         | "sale_cash"
         | "refund_cash"
         | "shift_payout"
-      user_role: "player" | "staff" | "owner"
+      user_role: "player" | "staff" | "owner" | "guest" | "member" | "coach"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1244,7 +1330,7 @@ export const Constants = {
         "refund_cash",
         "shift_payout",
       ],
-      user_role: ["player", "staff", "owner"],
+      user_role: ["player", "staff", "owner", "guest", "member", "coach"],
     },
   },
 } as const
