@@ -97,15 +97,58 @@ export const ReservationCalendar = ({ onReservationSelect }: ReservationCalendar
   const loadReservations = async () => {
     setLoading(true);
     try {
-      // For now, use mock data
-      // TODO: Replace with actual Supabase query
-      setReservations(mockReservations);
+      console.log('Loading reservations from database...');
+      
+      const { data, error } = await supabase
+        .from('reservations')
+        .select(`
+          *,
+          courts(name)
+        `)
+        .order('start_time', { ascending: true });
+      
+      console.log('Reservations loaded:', { data, error });
+      
+      if (error) {
+        console.error('Error loading reservations:', error);
+        toast({
+          title: 'Chyba',
+          description: `Nepodařilo se načíst rezervace: ${error.message}`,
+          variant: 'destructive'
+        });
+        // Fallback to mock data for development
+        setReservations(mockReservations);
+        return;
+      }
+      
+      // Convert data to expected format
+      const formattedReservations = data?.map(r => ({
+        id: r.id,
+        court_name: r.courts?.name || `Kurt ${r.court_id}`,
+        start_time: new Date(r.start_time),
+        end_time: new Date(r.end_time),
+        price: r.price || 0,
+        status: r.status || 'booked',
+        player_name: (r.guest_contact as any)?.name || 'Uživatel',
+        player_email: (r.guest_contact as any)?.email || '',
+        player_phone: (r.guest_contact as any)?.phone || '',
+        guest_contact: r.guest_contact,
+        payment_method: r.payment_method || 'cash',
+        is_guest: !!r.guest_contact
+      })) || [];
+      
+      setReservations(formattedReservations);
+      console.log(`Loaded ${formattedReservations.length} reservations`);
+      
     } catch (error) {
+      console.error('Unexpected error loading reservations:', error);
       toast({
         title: 'Chyba',
-        description: 'Nepodařilo se načíst rezervace.',
+        description: 'Neočekávaná chyba při načítání rezervací.',
         variant: 'destructive'
       });
+      // Fallback to mock data
+      setReservations(mockReservations);
     } finally {
       setLoading(false);
     }

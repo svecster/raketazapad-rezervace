@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, Plus, Filter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Layout } from '@/components/layout/Layout';
+import { useToast } from '@/hooks/use-toast';
 import { ReservationCalendar } from '@/components/admin/ReservationCalendar';
 
 interface Reservation {
@@ -22,6 +23,7 @@ export const ManagementPage = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchReservations();
@@ -29,15 +31,39 @@ export const ManagementPage = () => {
 
   const fetchReservations = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('reservations')
-      .select('*')
-      .order('start_time', { ascending: true });
-    
-    if (data && !error) {
-      setReservations(data);
+    try {
+      console.log('Fetching reservations...');
+      const { data, error } = await supabase
+        .from('reservations')
+        .select('*')
+        .order('start_time', { ascending: true });
+      
+      console.log('Reservations query result:', { data, error });
+      
+      if (error) {
+        console.error('Error fetching reservations:', error);
+        toast({
+          title: 'Chyba',
+          description: `Nepodařilo se načíst rezervace: ${error.message}`,
+          variant: 'destructive'
+        });
+        return;
+      }
+      
+      if (data) {
+        setReservations(data);
+        console.log(`Loaded ${data.length} reservations`);
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast({
+        title: 'Chyba',
+        description: 'Neočekávaná chyba při načítání rezervací.',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -119,13 +145,22 @@ export const ManagementPage = () => {
           </Card>
         </div>
 
-        {/* Calendar */}
+        {/* Calendar or Loading State */}
         <Card>
           <CardHeader>
             <CardTitle>Kalendář rezervací</CardTitle>
           </CardHeader>
           <CardContent>
-            <ReservationCalendar />
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Načítám rezervace...</p>
+                </div>
+              </div>
+            ) : (
+              <ReservationCalendar />
+            )}
           </CardContent>
         </Card>
       </div>
