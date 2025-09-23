@@ -9,7 +9,7 @@ export interface UserProfile {
   name: string;
   email: string;
   phone?: string;
-  role: 'player' | 'staff' | 'owner';
+  role: 'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner';
   created_at: string;
 }
 

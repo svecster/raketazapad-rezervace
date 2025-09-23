@@ -7,8 +7,8 @@ import { Loader2 } from 'lucide-react';
 interface LayoutProps {
   children: ReactNode;
   requireAuth?: boolean;
-  requiredRole?: 'player' | 'staff' | 'owner';
-  allowedRoles?: Array<'player' | 'staff' | 'owner'>;
+  requiredRole?: 'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner';
+  allowedRoles?: Array<'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner'>;
 }
 
 export const Layout = ({ children, requireAuth = false, requiredRole, allowedRoles }: LayoutProps) => {

@@ -27,7 +27,7 @@ interface User {
   email: string;
   username?: string;
   phone?: string;
-  role: 'player' | 'staff' | 'owner';
+  role: 'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner';
   created_at: string;
 }
 
@@ -56,7 +56,7 @@ export const StaffManagement = () => {
     name: '',
     email: '',
     phone: '',
-    role: 'staff' as 'staff' | 'owner' | 'player'
+    role: 'staff' as 'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner'
   });
 
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -461,7 +461,7 @@ export const StaffManagement = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="edit-role">Role *</Label>
-                <Select value={editForm.role} onValueChange={(value: 'staff' | 'owner' | 'player') => setEditForm(prev => ({ ...prev, role: value }))}>
+                <Select value={editForm.role} onValueChange={(value: 'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner') => setEditForm(prev => ({ ...prev, role: value }))}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

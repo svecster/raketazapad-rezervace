@@ -215,7 +215,7 @@ export class OwnerBootstrapService {
     name: string;
     email: string;
     phone?: string;
-    role: 'staff' | 'owner' | 'player';
+    role: 'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner';
   }): Promise<{ success: boolean; error?: string }> {
     try {
       const { data, error } = await supabase.functions.invoke('owner-bootstrap', {

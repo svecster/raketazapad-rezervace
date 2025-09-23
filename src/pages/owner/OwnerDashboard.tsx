@@ -32,7 +32,7 @@ export const OwnerDashboard = () => {
       id: '1',
       name: 'Jan Novák',
       email: 'jan.novak@email.cz',
-      role: 'player' as 'player' | 'staff' | 'owner',
+      role: 'player' as 'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner',
       created_at: new Date('2024-01-01'),
       active: true
     },
@@ -40,7 +40,7 @@ export const OwnerDashboard = () => {
       id: '2',
       name: 'Marie Svobodová',
       email: 'marie.svobodova@email.cz',
-      role: 'staff' as 'player' | 'staff' | 'owner',
+      role: 'staff' as 'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner',
       created_at: new Date('2024-01-15'),
       active: true
     },
@@ -48,7 +48,7 @@ export const OwnerDashboard = () => {
       id: '3',
       name: 'Pavel Novotný',
       email: 'pavel.novotny@email.cz',
-      role: 'owner' as 'player' | 'staff' | 'owner',
+      role: 'owner' as 'guest' | 'member' | 'coach' | 'player' | 'staff' | 'owner',
       created_at: new Date('2024-01-10'),
       active: true
     }
