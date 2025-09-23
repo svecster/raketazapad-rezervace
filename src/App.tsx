@@ -8,41 +8,50 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthProvider";
 import { PrivateRoute, RoleRoute } from "./auth/guards";
 
+// Layouts
+import { PublicLayout } from "./components/layout/PublicLayout";
+import { AppLayout } from "./components/layout/AppLayout";
+
 // Auth pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Profile from "./pages/Profile";
 import Logout from "./pages/Logout";
-
-// Admin pages
-import AdminCalendar from "./pages/admin/AdminCalendar";
-import Settings from "./pages/admin/Settings";
-import Users from "./pages/admin/Users";
-
-// POS pages
-import PosPage from "./pages/pos/PosPage";
-import StockPage from "./pages/pos/StockPage";
-import InventoryPage from "./pages/pos/InventoryPage";
-import ReportsPage from "./pages/pos/ReportsPage";
-import PosSettingsPage from "./pages/pos/PosSettingsPage";
 
 // Error pages
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
-
-// Core pages
-import { Navigate } from "react-router-dom";
-import { ReservationPage } from "./pages/ReservationPage";
-import { ManagementPage } from "./pages/ManagementPage";
-import { CheckoutPage } from '@/pages/CheckoutPage';
-import { MyReservationsPage } from "./pages/MyReservationsPage";
-import { PaymentHistoryPage } from "./pages/PaymentHistoryPage";
 
 // Public pages
 import { HomePage } from "./pages/HomePage";
 import { ServicesPage } from "./pages/ServicesPage";
 import { PricingPage } from "./pages/PricingPage";
 import { ContactPage } from "./pages/ContactPage";
+
+// App pages - Core
+import { AppReservationPage } from "./pages/app/AppReservationPage";
+import { MyReservationsPage } from "./pages/app/MyReservationsPage";
+import { PaymentHistoryPage } from "./pages/app/PaymentHistoryPage";
+import { ProfilePage } from "./pages/app/ProfilePage";
+
+// App pages - Staff
+import { StaffDashboardPage } from "./pages/app/staff/StaffDashboardPage";
+import { StaffReservationsPage } from "./pages/app/staff/StaffReservationsPage";
+import { StaffCashRegisterPage } from "./pages/app/staff/StaffCashRegisterPage";
+import { StaffShiftsPage } from "./pages/app/staff/StaffShiftsPage";
+import { StaffClientsPage } from "./pages/app/staff/StaffClientsPage";
+
+// App pages - Owner
+import { OwnerDashboardPage } from "./pages/app/owner/OwnerDashboardPage";
+import { OwnerPricingPage } from "./pages/app/owner/OwnerPricingPage";
+import { OwnerInventoryPage } from "./pages/app/owner/OwnerInventoryPage";
+import { OwnerFinancePage } from "./pages/app/owner/OwnerFinancePage";
+
+// App pages - Trainer
+import { TrainerCalendarPage } from "./pages/app/trainer/TrainerCalendarPage";
+import { TrainerPayoutsPage } from "./pages/app/trainer/TrainerPayoutsPage";
+
+// App pages - Admin
+import { AdminPage } from "./pages/app/admin/AdminPage";
 
 const queryClient = new QueryClient();
 
