@@ -89,63 +89,91 @@ export const ManagementPage = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Dnes</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {reservations.filter(r => 
-                  new Date(r.start_time).toDateString() === new Date().toDateString()
-                ).length}
-              </div>
-              <p className="text-xs text-muted-foreground">rezervací</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Aktivní</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {reservations.filter(r => r.status === 'booked').length}
-              </div>
-              <p className="text-xs text-muted-foreground">rezervací</p>
-            </CardContent>
-          </Card>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <Card key={i}>
+                <CardContent className="pt-6">
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-muted rounded w-16 mb-2"></div>
+                    <div className="h-8 bg-muted rounded w-12 mb-1"></div>
+                    <div className="h-3 bg-muted rounded w-20"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Dnes</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {reservations.filter(r => 
+                    new Date(r.start_time).toDateString() === new Date().toDateString()
+                  ).length}
+                </div>
+                <p className="text-xs text-muted-foreground">rezervací</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Aktivní</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {reservations.filter(r => r.status === 'booked').length}
+                </div>
+                <p className="text-xs text-muted-foreground">rezervací</p>
+              </CardContent>
+            </Card>
 
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Zaplaceno</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {reservations.filter(r => r.status === 'paid').length}
+                </div>
+                <p className="text-xs text-muted-foreground">rezervací</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Příjem</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {Math.round(reservations.reduce((sum, r) => sum + (r.price || 0), 0))} Kč
+                </div>
+                <p className="text-xs text-muted-foreground">celkem</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {reservations.length === 0 && !loading && (
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Zaplaceno</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {reservations.filter(r => r.status === 'paid').length}
+            <CardContent className="pt-6">
+              <div className="text-center py-8">
+                <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Žádné rezervace nenalezeny</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Zkuste obnovit stránku nebo kontaktujte správce systému
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground">rezervací</p>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Příjem</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {Math.round(reservations.reduce((sum, r) => sum + (r.price || 0), 0))} Kč
-              </div>
-              <p className="text-xs text-muted-foreground">celkem</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Calendar or Loading State */}
+        )}
         <Card>
           <CardHeader>
             <CardTitle>Kalendář rezervací</CardTitle>
