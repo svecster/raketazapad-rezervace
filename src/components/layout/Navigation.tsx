@@ -29,7 +29,6 @@ export const Navigation = () => {
   const isActive = (href: string) => location.pathname === href;
   
   const isStaff = hasRole(session, ["staff", "owner"], appRole);
-  const isAdmin = hasRole(session, ["owner"], appRole);
   const isOwner = hasRole(session, ["owner"], appRole);
 
   // Helper to check if user is on internal page and needs back button
@@ -82,42 +81,39 @@ export const Navigation = () => {
           
           {/* Admin Navigation Links */}
           {isStaff && (
-            <Link
-              to="/sprava"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isActive('/sprava') 
-                  ? 'text-primary' 
-                  : 'text-foreground/80'
-              }`}
-            >
-              Správa
-            </Link>
+            <>
+              <Link
+                to="/sprava"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/sprava') 
+                    ? 'text-primary' 
+                    : 'text-foreground/80'
+                }`}
+              >
+                Správa
+              </Link>
+              <Link
+                to="/pokladna"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/pokladna') 
+                    ? 'text-primary' 
+                    : 'text-foreground/80'
+                }`}
+              >
+                Pokladna
+              </Link>
+              <Link
+                to="/sklad"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/sklad') 
+                    ? 'text-primary' 
+                    : 'text-foreground/80'
+                }`}
+              >
+                Sklad
+              </Link>
+            </>
           )}
-          
-              {isAdmin && (
-                <>
-                  <Link
-                    to="/pokladna"
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      isActive('/pokladna') 
-                        ? 'text-primary' 
-                        : 'text-foreground/80'
-                    }`}
-                  >
-                    Pokladna
-                  </Link>
-                  <Link
-                    to="/sklad"
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      isActive('/sklad') 
-                        ? 'text-primary' 
-                        : 'text-foreground/80'
-                    }`}
-                  >
-                    Sklad
-                  </Link>
-                </>
-              )}
               
               {isOwner && (
                 <>
@@ -194,29 +190,27 @@ export const Navigation = () => {
                       </Link>
                     </DropdownMenuItem>
                      {isStaff && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/sprava" className="flex items-center">
-                          <Calendar className="mr-2 h-4 w-4" />
-                          Správa
-                        </Link>
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link to="/sprava" className="flex items-center">
+                            <Calendar className="mr-2 h-4 w-4" />
+                            Správa
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/pokladna" className="flex items-center">
+                            <ShoppingCart className="mr-2 h-4 w-4" />
+                            Pokladna
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/sklad" className="flex items-center">
+                            <Package className="mr-2 h-4 w-4" />
+                            Sklad
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
                     )}
-                       {isAdmin && (
-                        <>
-                          <DropdownMenuItem asChild>
-                            <Link to="/pokladna" className="flex items-center">
-                              <ShoppingCart className="mr-2 h-4 w-4" />
-                              Pokladna
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link to="/sklad" className="flex items-center">
-                              <Package className="mr-2 h-4 w-4" />
-                              Sklad
-                            </Link>
-                          </DropdownMenuItem>
-                        </>
-                      )}
                       {isOwner && (
                         <>
                           <DropdownMenuItem asChild>
@@ -302,44 +296,42 @@ export const Navigation = () => {
             
             {/* Admin Navigation Links - Mobile */}
             {isStaff && (
-              <Link
-                to="/sprava"
-                className={`block text-sm font-medium transition-colors hover:text-primary ${
-                  isActive('/sprava') 
-                    ? 'text-primary' 
-                    : 'text-foreground/80'
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Správa
-              </Link>
+              <>
+                <Link
+                  to="/sprava"
+                  className={`block text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/sprava') 
+                      ? 'text-primary' 
+                      : 'text-foreground/80'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Správa
+                </Link>
+                <Link
+                  to="/pokladna"
+                  className={`block text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/pokladna') 
+                      ? 'text-primary' 
+                      : 'text-foreground/80'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Pokladna
+                </Link>
+                <Link
+                  to="/sklad"
+                  className={`block text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/sklad') 
+                      ? 'text-primary' 
+                      : 'text-foreground/80'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sklad
+                </Link>
+              </>
             )}
-              {isAdmin && (
-                <>
-                  <Link
-                    to="/pokladna"
-                    className={`block text-sm font-medium transition-colors hover:text-primary ${
-                      isActive('/pokladna') 
-                        ? 'text-primary' 
-                        : 'text-foreground/80'
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Pokladna
-                  </Link>
-                  <Link
-                    to="/sklad"
-                    className={`block text-sm font-medium transition-colors hover:text-primary ${
-                      isActive('/sklad') 
-                        ? 'text-primary' 
-                        : 'text-foreground/80'
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Sklad
-                  </Link>
-                </>
-              )}
               {isOwner && (
                 <>
                   <Link
