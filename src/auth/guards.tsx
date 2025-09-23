@@ -18,6 +18,6 @@ export function PrivateRoute() {
 }
 
 export function RoleRoute({ allow }: { allow: string[] }) {
-  const { session } = useSession();
-  return hasRole(session, allow) ? <Outlet /> : <Navigate to="/403" replace />;
+  const { session, appRole } = useSession();
+  return hasRole(session, allow, appRole) ? <Outlet /> : <Navigate to="/403" replace />;
 }

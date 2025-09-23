@@ -34,7 +34,7 @@ import NotFound from "./pages/NotFound";
 import { Navigate } from "react-router-dom";
 import { ReservationPage } from "./pages/ReservationPage";
 import { ManagementPage } from "./pages/ManagementPage";
-import CheckoutPage from "./pages/CheckoutPage";
+import { CheckoutPage } from '@/pages/CheckoutPage';
 import { MyReservationsPage } from "./pages/MyReservationsPage";
 import { PaymentHistoryPage } from "./pages/PaymentHistoryPage";
 
@@ -73,15 +73,15 @@ const App = () => (
             <Route path="/platby" element={<PaymentHistoryPage />} />
             
             {/* Staff and above can access management and POS */}
-            <Route element={<RoleRoute allow={["staff","coach","admin","owner"]} />}>
+            <Route element={<RoleRoute allow={["staff","owner"]} />}>
               <Route path="/sprava" element={<ManagementPage />} />
               <Route path="/admin/pokladna" element={<CheckoutPage />} />
               <Route path="/pokladna" element={<PosPage />} />
               <Route path="/sklad" element={<StockPage />} />
             </Route>
             
-            {/* Admin and owner only */}
-            <Route element={<RoleRoute allow={["admin","owner"]} />}>
+            {/* Owner only */}
+            <Route element={<RoleRoute allow={["owner"]} />}>
               <Route path="/nastaveni" element={<Settings />} />
               <Route path="/uzivatele" element={<Users />} />
               <Route path="/inventury" element={<InventoryPage />} />
@@ -91,13 +91,6 @@ const App = () => (
           </Route>
           
           {/* Legacy redirects */}
-          <Route path="/app/hrac" element={<Navigate to="/profile" replace />} />
-          <Route path="/app/rezervace" element={<Navigate to="/profile" replace />} />
-          <Route path="/admin/obsluha" element={<Navigate to="/sprava" replace />} />
-          <Route path="/admin/personal" element={<Navigate to="/sprava" replace />} />
-          <Route path="/admin/majitel" element={<Navigate to="/nastaveni" replace />} />
-          <Route path="/rezervace/novy" element={<Navigate to="/rezervace" replace />} />
-          <Route path="/rezervace/verejne" element={<Navigate to="/rezervace" replace />} />
           
           {/* Error pages */}
           <Route path="/403" element={<Forbidden />} />

@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
-import { Header } from './Header';
-import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { Navigation } from './Navigation';
 
 interface LayoutProps {
   children: ReactNode;
@@ -26,7 +26,7 @@ export const Layout = ({ children, requireAuth = false, requiredRole, allowedRol
 
   // Redirect to auth if authentication is required but user is not logged in
   if (requireAuth && !user) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Redirect if user doesn't have required role
@@ -35,15 +35,17 @@ export const Layout = ({ children, requireAuth = false, requiredRole, allowedRol
     const hasAllowedRole = allowedRoles ? allowedRoles.includes(profile.role) : true;
     
     if (!hasRequiredRole || !hasAllowedRole) {
-      return <Navigate to="/" replace />;
+      return <Navigate to="/403" replace />;
     }
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto py-6 px-4">
-        {children}
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navigation />
+      <main className="flex-1">
+        <div className="container mx-auto py-6 px-4">
+          {children}
+        </div>
       </main>
     </div>
   );

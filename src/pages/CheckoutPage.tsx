@@ -9,9 +9,9 @@ import { CashRegisterManager } from '@/components/cash/CashRegisterManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShoppingCart, Banknote } from 'lucide-react';
 
-export default function CheckoutPage() {
+export const CheckoutPage = () => {
   return (
-    <Layout requireAuth={true}>
+    <Layout requireAuth={true} allowedRoles={['staff', 'owner']}>
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="checkout" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
@@ -36,4 +36,4 @@ export default function CheckoutPage() {
       </div>
     </Layout>
   );
-}
+};
