@@ -26,34 +26,28 @@ export const PaymentHistoryPage = () => {
     try {
       setLoading(true);
       
-      // Fetch payments for user's reservations
+      // Fetch reservations as payment history
       const { data, error } = await supabase
-        .from('payments')
-        .select(`
-          *,
-          reservation:reservations!payments_reservation_id_fkey(
-            id,
-            start_time,
-            court:courts(name)
-          )
-        `)
-        .or(`created_by.eq.${session?.user?.id},reservation_id.in.(select id from reservations where created_by = '${session?.user?.id}')`)
+        .from('reservations')
+        .select('*')
+        .eq('user_id', session?.user?.id)
+        .not('price', 'is', null)
         .order('created_at', { ascending: false });
       
-      if (error) {
-        console.error('Payment fetch error:', error);
-        // Fallback to simpler query if the complex one fails
-        const { data: simpleData, error: simpleError } = await supabase
-          .from('payments')
-          .select('*')
-          .eq('created_by', session?.user?.id)
-          .order('created_at', { ascending: false });
-        
-        if (simpleError) throw simpleError;
-        setPayments(simpleData || []);
-      } else {
-        setPayments(data || []);
-      }
+      if (error) throw error;
+      
+      // Map reservations to payment format
+      const mappedPayments = (data || []).map(reservation => ({
+        id: parseInt(reservation.id.substring(0, 8), 16),
+        reservation_id: reservation.id,
+        method: reservation.payment_method || 'cash',
+        amount_czk: reservation.price || 0,
+        created_at: reservation.payment_confirmed_at || reservation.created_at,
+        created_by: reservation.user_id,
+        notes: `Rezervace ${new Date(reservation.start_time).toLocaleDateString('cs-CZ')}`
+      }));
+      
+      setPayments(mappedPayments as Payment[]);
     } catch (error) {
       console.error('Error fetching payments:', error);
       toast.error('Chyba při načítání platební history');

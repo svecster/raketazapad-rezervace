@@ -42,7 +42,7 @@ export const ProfilePage = () => {
       }
       
       if (data) {
-        setProfile(data);
+        setProfile(data as UserProfile);
         setFormData({
           full_name: data.full_name || '',
           phone: data.phone || ''

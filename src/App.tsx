@@ -68,7 +68,7 @@ const App = () => (
           <Route path="/sluzby" element={<ServicesPage />} />
           <Route path="/cenik" element={<PricingPage />} />
           <Route path="/kontakt" element={<ContactPage />} />
-          <Route path="/rezervace" element={<ReservationPage />} />
+          <Route path="/rezervace" element={<AppReservationPage />} />
           
           {/* Auth pages */}
           <Route path="/login" element={<Login />} />
@@ -77,25 +77,37 @@ const App = () => (
           
           {/* Protected routes */}
           <Route element={<PrivateRoute />}>
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profil" element={<ProfilePage />} />
             <Route path="/moje-rezervace" element={<MyReservationsPage />} />
             <Route path="/platby" element={<PaymentHistoryPage />} />
+            <Route path="/rezervace" element={<AppReservationPage />} />
             
-            {/* Staff and above can access management and POS */}
+            {/* Staff routes */}
             <Route element={<RoleRoute allow={["staff","owner"]} />}>
-              <Route path="/sprava" element={<ManagementPage />} />
-              <Route path="/admin/pokladna" element={<CheckoutPage />} />
-              <Route path="/pokladna" element={<PosPage />} />
-              <Route path="/sklad" element={<StockPage />} />
+              <Route path="/staff/dashboard" element={<StaffDashboardPage />} />
+              <Route path="/staff/rezervace" element={<StaffReservationsPage />} />
+              <Route path="/staff/pokladna" element={<StaffCashRegisterPage />} />
+              <Route path="/staff/smeny" element={<StaffShiftsPage />} />
+              <Route path="/staff/klienti" element={<StaffClientsPage />} />
             </Route>
             
-            {/* Owner only */}
+            {/* Owner routes */}
             <Route element={<RoleRoute allow={["owner"]} />}>
-              <Route path="/nastaveni" element={<Settings />} />
-              <Route path="/uzivatele" element={<Users />} />
-              <Route path="/inventury" element={<InventoryPage />} />
-              <Route path="/reporty" element={<ReportsPage />} />
-              <Route path="/nastaveni/pokladna" element={<PosSettingsPage />} />
+              <Route path="/owner/dashboard" element={<OwnerDashboardPage />} />
+              <Route path="/owner/cenik" element={<OwnerPricingPage />} />
+              <Route path="/owner/sklad" element={<OwnerInventoryPage />} />
+              <Route path="/owner/finance" element={<OwnerFinancePage />} />
+            </Route>
+            
+            {/* Trainer routes */}
+            <Route element={<RoleRoute allow={["coach","owner"]} />}>
+              <Route path="/trainer/kalendar" element={<TrainerCalendarPage />} />
+              <Route path="/trainer/vyplaty" element={<TrainerPayoutsPage />} />
+            </Route>
+            
+            {/* Admin routes */}
+            <Route element={<RoleRoute allow={["owner"]} />}>
+              <Route path="/admin" element={<AdminPage />} />
             </Route>
           </Route>
           

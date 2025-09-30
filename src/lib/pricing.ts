@@ -12,26 +12,19 @@ export function calculateReservationPrice(
 ): number {
   try {
     const durationHours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-    const dayOfWeek = startTime.getDay(); // 0 = Sunday
-    const hour = startTime.getHours();
     
-    // Find matching price rule
-    const matchingRule = priceRules.find(rule => 
-      rule.court_type === court.type &&
-      (rule.day_of_week === null || rule.day_of_week === dayOfWeek) &&
-      (rule.start_hour === null || hour >= rule.start_hour) &&
-      (rule.end_hour === null || hour < rule.end_hour)
-    );
+    // Find matching price rule by court type
+    const matchingRule = priceRules.find(rule => rule.court_type === court.type);
     
     if (!matchingRule) {
       // Fallback to default pricing
-      const basePrice = court.type === 'inside' ? 400 : 300;
+      const basePrice = court.type === 'indoor' ? 400 : 300;
       return basePrice * durationHours * (isMember ? 0.8 : 1);
     }
     
     // Apply member discount if applicable
-    const finalPrice = matchingRule.price_per_hour_czk * durationHours;
-    return isMember ? finalPrice * 0.8 : finalPrice;
+    const pricePerHour = isMember ? matchingRule.member_price : matchingRule.non_member_price;
+    return pricePerHour * durationHours;
     
   } catch (error) {
     console.error('Error calculating reservation price:', error);

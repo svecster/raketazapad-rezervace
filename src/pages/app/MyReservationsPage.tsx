@@ -33,12 +33,12 @@ export const MyReservationsPage = () => {
           *,
           court:courts(*)
         `)
-        .eq('created_by', session?.user?.id)
+        .eq('user_id', session?.user?.id)
         .order('start_time', { ascending: false });
       
       if (error) throw error;
       
-      setReservations(data || []);
+      setReservations((data || []) as any);
     } catch (error) {
       console.error('Error fetching reservations:', error);
       toast.error('Chyba při načítání rezervací');
@@ -49,24 +49,18 @@ export const MyReservationsPage = () => {
 
   const getStatusLabel = (status: string) => {
     const labels = {
-      'new': 'Nová',
-      'confirmed': 'Potvrzená',
-      'checked_in': 'Přítomnost',
-      'completed': 'Dokončená',
-      'no_show': 'Nedostavil se',
-      'canceled': 'Zrušená'
+      'booked': 'Rezervováno',
+      'paid': 'Zaplaceno',
+      'cancelled': 'Zrušeno'
     };
     return labels[status as keyof typeof labels] || status;
   };
 
   const getStatusColor = (status: string) => {
     const colors = {
-      'new': 'default',
-      'confirmed': 'default',
-      'checked_in': 'default',
-      'completed': 'default',
-      'no_show': 'destructive',
-      'canceled': 'secondary'
+      'booked': 'default',
+      'paid': 'default',
+      'cancelled': 'secondary'
     };
     return colors[status as keyof typeof colors] || 'default';
   };
@@ -76,14 +70,14 @@ export const MyReservationsPage = () => {
     const startTime = new Date(reservation.start_time);
     const hoursBefore = (startTime.getTime() - now.getTime()) / (1000 * 60 * 60);
     
-    return reservation.status === 'new' && hoursBefore > 2; // Can cancel up to 2 hours before
+    return reservation.status === 'booked' && hoursBefore > 2; // Can cancel up to 2 hours before
   };
 
   const handleCancelReservation = async (reservationId: string) => {
     try {
       const { error } = await supabase
         .from('reservations')
-        .update({ status: 'canceled' })
+        .update({ status: 'cancelled' })
         .eq('id', reservationId);
       
       if (error) throw error;
@@ -96,8 +90,8 @@ export const MyReservationsPage = () => {
     }
   };
 
-  const upcoming = reservations.filter(r => new Date(r.start_time) > new Date() && r.status !== 'canceled');
-  const past = reservations.filter(r => new Date(r.start_time) <= new Date() || r.status === 'canceled');
+  const upcoming = reservations.filter(r => new Date(r.start_time) > new Date() && r.status !== 'cancelled');
+  const past = reservations.filter(r => new Date(r.start_time) <= new Date() || r.status === 'cancelled');
 
   if (loading) {
     return (
@@ -163,14 +157,9 @@ export const MyReservationsPage = () => {
                           </Badge>
                           <div className="flex items-center text-sm font-medium">
                             <CreditCard className="h-4 w-4 mr-1" />
-                            {formatPrice(reservation.price_czk)}
+                            {formatPrice(reservation.price)}
                           </div>
                         </div>
-                        {reservation.note && (
-                          <p className="text-xs text-muted-foreground">
-                            Poznámka: {reservation.note}
-                          </p>
-                        )}
                       </div>
                       
                       {canCancelReservation(reservation) && (
@@ -232,7 +221,7 @@ export const MyReservationsPage = () => {
                           </Badge>
                           <div className="flex items-center text-sm font-medium">
                             <CreditCard className="h-4 w-4 mr-1" />
-                            {formatPrice(reservation.price_czk)}
+                            {formatPrice(reservation.price)}
                           </div>
                         </div>
                       </div>

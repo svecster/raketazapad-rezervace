@@ -46,16 +46,16 @@ export const AppReservationPage = () => {
         .select('*')
         .gte('start_time', startOfDayDate.toISOString())
         .lt('start_time', endOfDayDate.toISOString())
-        .neq('status', 'canceled');
+        .neq('status', 'cancelled');
       
       // Fetch price rules
       const { data: priceRulesData } = await supabase
         .from('price_rules')
         .select('*');
       
-      setCourts(courtsData || []);
-      setReservations(reservationsData || []);
-      setPriceRules(priceRulesData || []);
+      setCourts((courtsData || []) as Court[]);
+      setReservations((reservationsData || []) as Reservation[]);
+      setPriceRules((priceRulesData || []) as PriceRule[]);
       
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -126,11 +126,11 @@ export const AppReservationPage = () => {
         .from('reservations')
         .insert({
           court_id: selectedCourt,
+          user_id: session?.user?.id,
           start_time: startTime.toISOString(),
           end_time: endTime.toISOString(),
-          created_by: session?.user?.id,
-          price_czk: totalPrice,
-          status: 'new'
+          price: totalPrice,
+          status: 'booked'
         });
       
       if (error) throw error;
@@ -204,11 +204,11 @@ export const AppReservationPage = () => {
                     <div>
                       <h3 className="font-medium">{court.name}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {court.type === 'inside' ? 'Vnitřní' : 'Venkovní'} kurt
+                        {court.type === 'indoor' ? 'Vnitřní' : 'Venkovní'} kurt
                       </p>
                     </div>
-                    <Badge variant={court.type === 'inside' ? 'default' : 'secondary'}>
-                      {court.type === 'inside' ? 'Hala' : 'Venku'}
+                    <Badge variant={court.type === 'indoor' ? 'default' : 'secondary'}>
+                      {court.type === 'indoor' ? 'Hala' : 'Venku'}
                     </Badge>
                   </div>
                 </div>

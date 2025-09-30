@@ -2,7 +2,7 @@
 
 export interface UserProfile {
   user_id: string;
-  app_role: 'guest' | 'player' | 'trainer' | 'staff' | 'owner' | 'admin';
+  app_role: string;
   full_name?: string;
   phone?: string;
   created_at: string;
@@ -12,36 +12,34 @@ export interface UserProfile {
 export interface Court {
   id: string;
   name: string;
-  type: 'inside' | 'outside';
-  status: 'available' | 'maintenance' | 'hidden';
-  seasonal_price_rules: Record<string, number>;
+  type: 'indoor' | 'outdoor';
+  status: 'available' | 'unavailable';
+  seasonal_price_rules?: any;
 }
 
 export interface Reservation {
   id: string;
+  user_id?: string;
+  guest_token?: string;
   court_id: string;
   start_time: string;
   end_time: string;
-  status: 'new' | 'confirmed' | 'checked_in' | 'completed' | 'no_show' | 'canceled';
-  created_by?: string;
-  guest_contact?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-  };
-  price_czk: number;
-  note?: string;
+  status: 'booked' | 'paid' | 'cancelled';
+  guest_contact?: any;
+  price: number;
+  payment_method?: string;
+  payment_confirmed_at?: string;
+  payment_confirmed_by?: string;
   created_at: string;
 }
 
 export interface PriceRule {
-  id: number;
-  name: string;
-  court_type: 'inside' | 'outside';
-  day_of_week?: number; // 0-6, 0 = Sunday
-  start_hour?: number;
-  end_hour?: number;
-  price_per_hour_czk: number;
+  id: string;
+  court_type: string;
+  season: string;
+  time_period: string;
+  member_price: number;
+  non_member_price: number;
   created_at: string;
   updated_at: string;
 }
